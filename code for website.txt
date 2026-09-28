@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LANKA EXPLORE | Book Verified Sri Lankan Driver-Guides</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'], display: ['Playfair Display','serif'] } } } }
+  </script>
+  <style>
+    .glass { background: rgba(15,23,42,.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .card-img { transition: transform .7s ease; }
+    .tour-card:hover .card-img { transform: scale(1.06); }
+    .fade-in { animation: fadeIn .6s ease both; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .field { width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: .75rem; padding: .65rem .9rem; color: #fff; font-size: .9rem; outline: none; transition: border-color .2s, box-shadow .2s; }
+    .field:focus { border-color: #fbbf24; box-shadow: 0 0 0 3px rgba(251,191,36,.15); }
+    .field::placeholder { color: #64748b; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-300 font-sans antialiased">
+
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-40 glass border-b border-slate-800">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+      <a href="#home" class="flex items-center gap-2 text-lg sm:text-xl font-display font-extrabold tracking-wide text-white">
+        <i class="fa-solid fa-compass text-amber-400"></i> LANKA <span class="text-amber-400">EXPLORE</span>
+      </a>
+      <ul class="hidden md:flex items-center gap-7 text-sm font-medium">
+        <li><a href="#home" class="hover:text-amber-400 transition-colors">Home</a></li>
+        <li><a href="#tours" class="hover:text-amber-400 transition-colors">Tours</a></li>
+        <li><a href="#how" class="hover:text-amber-400 transition-colors">How It Works</a></li>
+      </ul>
+      <div class="flex items-center gap-2">
+        <button data-open-modal class="inline-flex items-center gap-2 border border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-slate-900 font-semibold px-3 sm:px-4 py-2 rounded-full text-sm transition-all">
+          <i class="fa-solid fa-plus"></i><span class="hidden sm:inline">List Your Tour</span>
+        </button>
+        <a id="navWa" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white font-semibold px-3 sm:px-4 py-2 rounded-full text-sm transition-all hover:shadow-lg hover:shadow-green-600/30">
+          <i class="fa-brands fa-whatsapp text-lg"></i><span class="hidden sm:inline">Contact Us</span>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section id="home" class="relative min-h-[80vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-amber-950">
+    <img src="https://images.unsplash.com/photo-1586523969943-2d62e3f0e2f5?auto=format&fit=crop&w=1920&q=80" alt="" class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'">
+    <div class="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/70 to-slate-900"></div>
+    <div class="relative max-w-5xl mx-auto px-4 sm:px-6 py-24 text-center">
+      <span class="inline-block px-4 py-1.5 mb-6 rounded-full border border-amber-400/40 bg-amber-400/10 text-amber-400 text-xs font-semibold tracking-widest uppercase">
+        <i class="fa-solid fa-shield-halved mr-1"></i> Verified Driver-Guides Only
+      </span>
+      <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
+        Book Trusted Sri Lankan <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-amber-500">Driver-Guides</span> in Minutes
+      </h1>
+      <p class="mt-6 max-w-2xl mx-auto text-lg text-slate-300">
+        Browse tours priced by local experts, then confirm everything with our team on WhatsApp. Safe, simple and personal.
+      </p>
+      <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="#tours" class="inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold px-8 py-3.5 rounded-full transition-all hover:shadow-xl hover:shadow-amber-500/30 hover:-translate-y-1">
+          <i class="fa-solid fa-map-location-dot"></i> Browse Tours
+        </a>
+        <button data-open-modal class="inline-flex items-center justify-center gap-2 border border-slate-500 hover:border-amber-400 hover:text-amber-400 text-white font-semibold px-8 py-3.5 rounded-full transition-all hover:-translate-y-1">
+          <i class="fa-solid fa-id-card"></i> I'm a Driver / Guide
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOURS -->
+  <section id="tours" class="py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <p class="text-amber-400 text-sm font-semibold tracking-widest uppercase mb-2">Marketplace</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-bold text-white">Available Tours</h2>
+        <p class="mt-3 text-slate-400"><span id="tourCount" class="text-amber-400 font-semibold">0</span> tours listed. All bookings are handled by our team.</p>
+      </div>
+      <div id="tourGrid" class="grid gap-8 md:grid-cols-2 lg:grid-cols-3"></div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="py-20 bg-slate-800/40 border-y border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="font-display text-3xl sm:text-4xl font-bold text-white text-center mb-12">How It Works</h2>
+      <div class="grid gap-6 md:grid-cols-3">
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-700/60 hover:border-amber-400/50 transition-all hover:-translate-y-1">
+          <div class="w-12 h-12 rounded-xl bg-amber-400/10 text-amber-400 flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-magnifying-glass"></i></div>
+          <h3 class="text-white font-semibold mb-1">1. Choose a Tour</h3>
+          <p class="text-sm text-slate-400">Compare photos, inclusions and prices set by local driver-guides.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-700/60 hover:border-amber-400/50 transition-all hover:-translate-y-1">
+          <div class="w-12 h-12 rounded-xl bg-amber-400/10 text-amber-400 flex items-center justify-center text-xl mb-4"><i class="fa-brands fa-whatsapp"></i></div>
+          <h3 class="text-white font-semibold mb-1">2. Message Our Team</h3>
+          <p class="text-sm text-slate-400">Tap Book via WhatsApp and we confirm dates, pickup and payment with you.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-700/60 hover:border-amber-400/50 transition-all hover:-translate-y-1">
+          <div class="w-12 h-12 rounded-xl bg-amber-400/10 text-amber-400 flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-car-side"></i></div>
+          <h3 class="text-white font-semibold mb-1">3. Enjoy the Journey</h3>
+          <p class="text-sm text-slate-400">Your verified driver-guide meets you and the adventure begins.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-950 border-t border-slate-800 pt-12 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <a href="#home" class="flex items-center gap-2 text-lg font-display font-extrabold text-white"><i class="fa-solid fa-compass text-amber-400"></i> LANKA <span class="text-amber-400">EXPLORE</span></a>
+        <ul class="flex flex-wrap justify-center gap-6 text-sm">
+          <li><a href="#home" class="hover:text-amber-400 transition-colors">Home</a></li>
+          <li><a href="#tours" class="hover:text-amber-400 transition-colors">Tours</a></li>
+          <li><a href="#how" class="hover:text-amber-400 transition-colors">How It Works</a></li>
+          <li><button data-open-modal class="hover:text-amber-400 transition-colors">List Your Tour</button></li>
+        </ul>
+        <div class="flex gap-3">
+          <a id="footWa" target="_blank" rel="noopener" aria-label="WhatsApp" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-green-600 hover:text-white flex items-center justify-center transition-all hover:-translate-y-1"><i class="fa-brands fa-whatsapp"></i></a>
+          <a href="#" aria-label="Facebook" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-amber-500 hover:text-slate-900 flex items-center justify-center transition-all hover:-translate-y-1"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-amber-500 hover:text-slate-900 flex items-center justify-center transition-all hover:-translate-y-1"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+      </div>
+      <p class="mt-8 pt-6 border-t border-slate-800 text-center text-xs text-slate-500">&copy; <span id="year">2026</span> LANKA EXPLORE. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- LISTING MODAL -->
+  <div id="modal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl fade-in">
+      <div class="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-slate-800 border-b border-slate-700">
+        <h3 id="modalTitle" class="font-display text-xl font-bold text-white"><i class="fa-solid fa-route text-amber-400 mr-2"></i>List Your Tour</h3>
+        <button id="closeModal" class="w-9 h-9 rounded-full hover:bg-slate-700 text-slate-400 hover:text-white" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="listingForm" class="p-6 grid gap-4 sm:grid-cols-2" novalidate>
+        <div class="sm:col-span-2 flex gap-3 p-3 rounded-xl bg-amber-400/10 border border-amber-400/30 text-sm text-amber-200">
+          <i class="fa-solid fa-lock mt-0.5"></i>
+          <p>Your phone number is for our admin records only. It is never shown to tourists. All bookings go through Lanka Explore.</p>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1" for="fName">Driver / Company Name *</label>
+          <input id="fName" class="field" required maxlength="60" placeholder="e.g. Nimal Tours">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1" for="fTitle">Tour Title *</label>
+          <input id="fTitle" class="field" required maxlength="70" placeholder="e.g. Kandy Cultural Day Trip">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1" for="fPrice">Daily / Package Rate (USD) *</label>
+          <input id="fPrice" type="number" min="1" step="1" class="field" required placeholder="e.g. 80">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1" for="fDuration">Tour Duration *</label>
+          <input id="fDuration" class="field" required maxlength="30" placeholder="e.g. 1 Day, 8 hours">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-xs font-medium text-slate-400 mb-1" for="fPhoto">High-Resolution Photo URL *</label>
+          <input id="fPhoto" type="url" class="field" required placeholder="https://images.unsplash.com/...">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-xs font-medium text-slate-400 mb-1" for="fDesc">Detailed Itinerary / Description *</label>
+          <textarea id="fDesc" rows="4" class="field" required maxlength="600" placeholder="Describe the route, stops and what is included (separate inclusions with commas if you like)."></textarea>
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-xs font-medium text-slate-400 mb-1" for="fWa">Your WhatsApp Number (private, admin only) *</label>
+          <input id="fWa" type="tel" class="field" required placeholder="e.g. +94 77 123 4567">
+        </div>
+        <p id="formError" class="sm:col-span-2 hidden text-sm text-red-400"></p>
+        <div class="sm:col-span-2 flex flex-col-reverse sm:flex-row gap-3 sm:justify-end pt-2">
+          <button type="button" id="cancelModal" class="px-6 py-3 rounded-xl border border-slate-600 hover:border-slate-400 text-slate-300 font-medium transition-colors">Cancel</button>
+          <button type="submit" class="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold transition-all hover:shadow-lg hover:shadow-amber-500/30">
+            <i class="fa-solid fa-paper-plane mr-2"></i>Submit Listing
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden px-5 py-3 rounded-full bg-slate-800 border border-amber-400/50 text-sm text-white shadow-2xl"></div>
+
+  <script>
+    const WA_NUMBER = '94713061980';
+    const waLink = t => `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(t)}`;
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+    const tours = [
+      {
+        title: 'Sigiriya Day Tour', operator: 'Verified Partner', duration: '1 Day (12 hrs)', price: 65, unit: 'per person',
+        photos: [
+          'https://images.unsplash.com/photo-1586523969943-2d62e3f0e2f5?auto=format&fit=crop&w=900&q=80',
+          'https://images.unsplash.com/photo-1566766189268-ec8d7e5cf9a8?auto=format&fit=crop&w=900&q=80',
+          'https://images.unsplash.com/photo-1568430462989-44163eb1752f?auto=format&fit=crop&w=900&q=80'
+        ],
+        includes: ['Private A/C vehicle', 'English-speaking guide', 'Village lunch', 'Water'],
+        desc: 'Climb the legendary Lion Rock fortress, admire the ancient frescoes and enjoy a village lunch.'
+      },
+      {
+        title: 'Ella Scenic Trip', operator: 'Verified Partner', duration: '3 Days / 2 Nights', price: 120, unit: 'per day',
+        photos: [
+          'https://images.unsplash.com/photo-1566766189268-ec8d7e5cf9a8?auto=format&fit=crop&w=900&q=80',
+          'https://images.unsplash.com/photo-1586523969943-2d62e3f0e2f5?auto=format&fit=crop&w=900&q=80'
+        ],
+        includes: ['Driver-guide', 'Fuel & parking', 'Tea factory visit', 'Nine Arches Bridge stop'],
+        desc: 'Wind through the hill country, ride the famous train, hike Little Adam\'s Peak and visit a tea plantation.'
+      },
+      {
+        title: 'Mirissa Whale Watching', operator: 'Verified Partner', duration: 'Half Day (5 hrs)', price: 45, unit: 'per person',
+        photos: [
+          'https://images.unsplash.com/photo-1568430462989-44163eb1752f?auto=format&fit=crop&w=900&q=80',
+          'https://images.unsplash.com/photo-1586523969943-2d62e3f0e2f5?auto=format&fit=crop&w=900&q=80'
+        ],
+        includes: ['Boat ticket', 'Breakfast', 'Life jacket', 'Hotel pickup'],
+        desc: 'Sail out at sunrise to spot blue whales and dolphins, then relax on Mirissa\'s golden beach.'
+      }
+    ];
+
+    const grid = document.getElementById('tourGrid');
+
+    function cardHTML(t, i) {
+      const thumbs = t.photos.length > 1
+        ? `<div class="absolute bottom-3 left-3 flex gap-2">${t.photos.map((p, k) =>
+            `<button type="button" data-thumb data-src="${esc(p)}" class="w-10 h-10 rounded-lg overflow-hidden border-2 ${k === 0 ? 'border-amber-400' : 'border-white/40'} hover:border-amber-400 transition-colors" aria-label="Photo ${k + 1}"><img src="${esc(p)}" alt="" class="w-full h-full object-cover" onerror="this.style.display='none'"></button>`).join('')}</div>`
+        : '';
+      const chips = t.includes.map(x => `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-700/60 text-xs text-slate-200"><i class="fa-solid fa-check text-amber-400 text-[10px]"></i>${esc(x)}</span>`).join('');
+      const msg = `Hi, I want to book ${t.title} for $${t.price}`;
+      return `
+      <article class="tour-card bg-slate-800/60 border border-slate-700/60 rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-2 hover:border-amber-400/50 hover:shadow-2xl hover:shadow-amber-500/10 fade-in" style="animation-delay:${Math.min(i, 6) * 80}ms">
+        <div class="relative h-56 overflow-hidden bg-gradient-to-br from-slate-700 to-amber-900">
+          <img data-main src="${esc(t.photos[0])}" alt="${esc(t.title)}" loading="lazy" class="card-img w-full h-full object-cover" onerror="this.style.display='none'">
+          <span class="absolute top-3 left-3 bg-amber-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-full"><i class="fa-regular fa-clock mr-1"></i>${esc(t.duration)}</span>
+          ${t.isNew ? '<span class="absolute top-3 right-3 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full">NEW</span>' : ''}
+          ${thumbs}
+        </div>
+        <div class="p-6 flex flex-col flex-1">
+          <h3 class="font-display text-xl font-bold text-white">${esc(t.title)}</h3>
+          <p class="text-xs text-amber-400 mt-1"><i class="fa-solid fa-circle-check mr-1"></i>${esc(t.operator)}</p>
+          <p class="mt-3 text-sm text-slate-400">${esc(t.desc)}</p>
+          <div class="mt-4 flex flex-wrap gap-2 flex-1 content-start">${chips}</div>
+          <div class="mt-5 pt-4 border-t border-slate-700">
+            <p class="text-2xl font-bold text-amber-400">$${esc(t.price)} <span class="text-sm font-normal text-slate-400">${esc(t.unit)}</span></p>
+          </div>
+          <a href="${waLink(msg)}" target="_blank" rel="noopener" class="mt-4 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white font-semibold py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-green-600/30">
+            <i class="fa-brands fa-whatsapp text-xl"></i> Book via WhatsApp
+          </a>
+        </div>
+      </article>`;
+    }
+
+    function render() {
+      grid.innerHTML = tours.map(cardHTML).join('');
+      document.getElementById('tourCount').textContent = tours.length;
+    }
+
+    // Thumbnail gallery swap
+    grid.addEventListener('click', e => {
+      const btn = e.target.closest('[data-thumb]');
+      if (!btn) return;
+      const card = btn.closest('article');
+      const main = card.querySelector('[data-main]');
+      main.style.display = '';
+      main.src = btn.dataset.src;
+      card.querySelectorAll('[data-thumb]').forEach(b => {
+        b.classList.toggle('border-amber-400', b === btn);
+        b.classList.toggle('border-white/40', b !== btn);
+      });
+    });
+
+    // Modal
+    const modal = document.getElementById('modal');
+    const form = document.getElementById('listingForm');
+    const formError = document.getElementById('formError');
+    const openModal = () => { modal.classList.remove('hidden'); modal.classList.add('flex'); document.body.style.overflow = 'hidden'; document.getElementById('fName').focus(); };
+    const closeModal = () => { modal.classList.add('hidden'); modal.classList.remove('flex'); document.body.style.overflow = ''; formError.classList.add('hidden'); };
+    document.querySelectorAll('[data-open-modal]').forEach(b => b.addEventListener('click', openModal));
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('cancelModal').addEventListener('click', closeModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
+
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg; el.classList.remove('hidden');
+      clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.add('hidden'), 4000);
+    }
+    function showError(msg) { formError.textContent = msg; formError.classList.remove('hidden'); }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const v = id => document.getElementById(id).value.trim();
+      const name = v('fName'), title = v('fTitle'), duration = v('fDuration'), photo = v('fPhoto'), desc = v('fDesc'), wa = v('fWa');
+      const price = parseFloat(v('fPrice'));
+
+      if (!name || !title || !duration || !photo || !desc || !wa) return showError('Please complete all fields.');
+      if (!(price > 0)) return showError('Please enter a valid rate in USD.');
+      let url;
+      try { url = new URL(photo); } catch (_) { return showError('Please enter a valid photo URL.'); }
+      if (!/^https?:$/.test(url.protocol)) return showError('Photo URL must start with http:// or https://');
+      const digits = wa.replace(/\D/g, '');
+      if (digits.length < 9 || digits.length > 15) return showError('Please enter a valid WhatsApp number.');
+
+      // Inclusions: use comma-separated parts of the description if they are short, else a generic set
+      const parts = desc.split(/[,\n]/).map(s => s.trim()).filter(s => s && s.length <= 28).slice(0, 4);
+      const includes = parts.length >= 2 ? parts : ['Driver-guide', 'Vehicle', 'Custom itinerary'];
+
+      tours.unshift({ title, operator: name, duration, price, unit: 'per day / package', photos: [photo], includes, desc: desc.length > 160 ? desc.slice(0, 157) + '...' : desc, isNew: true });
+      render();
+
+      // Driver's number is only sent privately to the admin, never rendered on the site
+      const adminMsg = [
+        'New Driver Listing Submitted for Approval',
+        `Driver/Company: ${name}`,
+        `Tour: ${title}`,
+        `Rate: $${price} (USD)`,
+        `Duration: ${duration}`,
+        `Photo: ${photo}`,
+        `Description: ${desc.slice(0, 400)}`,
+        `Driver WhatsApp (internal only): ${wa}`
+      ].join('\n');
+
+      form.reset(); closeModal();
+      document.getElementById('tours').scrollIntoView({ behavior: 'smooth' });
+      toast('Listing added! Opening WhatsApp to notify our admin...');
+      window.open(waLink(adminMsg), '_blank', 'noopener');
+    });
+
+    // Init
+    const generalMsg = 'Hi Lanka Explore, I have a question about your tours.';
+    document.getElementById('navWa').href = waLink(generalMsg);
+    document.getElementById('footWa').href = waLink(generalMsg);
+    document.getElementById('year').textContent = new Date().getFullYear();
+    render();
+  </script>
+</body>
+</html>
