@@ -54,12 +54,12 @@ body{transition:opacity .18s}body.sw{opacity:0}
 </nav>
 </header>
 
-<section id="home" class="relative min-h-[78vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-amber-950">
+<section id="home" class="relative min-h-[78vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-950 via-emerald-950/80 to-slate-900">
   <!-- Video / image playlist background. Videos crossfade; if a video can't play, its poster image (and finally the .kb fallback) is shown instead. -->
   <div id="heroBg" class="absolute inset-0 w-full h-full"></div>
   <div id="heroDots" class="heroDots"></div>
-  <div class="blob bg-amber-500 w-72 h-72 -top-10 -left-10"></div><div class="blob bg-teal-500 w-80 h-80 bottom-0 right-0" style="animation-delay:-6s"></div>
-  <div class="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/70 to-slate-900 z-[1]"></div>
+  <div class="blob bg-emerald-500 w-72 h-72 -top-10 -left-10"></div><div class="blob bg-amber-500 w-80 h-80 bottom-0 right-0" style="animation-delay:-6s"></div>
+  <div class="absolute inset-0 bg-gradient-to-b from-slate-950/85 via-emerald-950/60 to-slate-900 z-[1]"></div>
   <div class="relative z-[2] max-w-4xl mx-auto px-4 py-20 text-center">
     <span class="inline-block px-4 py-1.5 mb-6 rounded-full border border-amber-400/40 bg-amber-400/10 text-amber-400 text-xs font-semibold tracking-widest uppercase"><i class="fa-solid fa-shield-halved mr-1"></i><span data-i="badge"></span></span>
     <h1 data-i="h1" class="font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight"></h1>
@@ -255,26 +255,20 @@ document.addEventListener('keydown',e=>{
   if($('lb').classList.contains('on')){if(e.key==='ArrowRight')lbGo(1);if(e.key==='ArrowLeft')lbGo(-1)}});
 
 /* ==================================================================
-   HERO VIDEO / IMAGE PLAYLIST
-   Replace the `src` of each entry with your own licensed Sri Lanka
-   footage (self-hosted or on a CDN you control). The URLs below are
-   third-party sample clips used only as working placeholders — do
-   not rely on them for a live production site. `poster` is shown
-   immediately and while the video loads; if the video ever fails to
-   play (network, codec, blocked host) the poster stays on screen
-   and the slider still advances on schedule, so the page never
-   breaks even if a clip URL goes stale.
+   HERO VIDEO / IMAGE PLAYLIST — Sri Lankan Wildlife & Safari
+   `poster` is shown immediately and while the video loads; if a
+   video ever fails to play (network, codec, blocked host) the
+   poster stays on screen and the slider still advances on schedule.
    ================================================================== */
 const VIDEOS=[
-  {label:'Wildlife',   src:'https://assets.mixkit.co/videos/4611/4611-720.mp4', poster:'https://images.unsplash.com/photo-1547721064-da6cfb341d50?auto=format&fit=crop&w=1920&q=80'},
-  {label:'Beach',      src:'https://assets.mixkit.co/videos/1093/1093-720.mp4', poster:'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1920&q=80'},
-  {label:'Hiking',     src:'https://assets.mixkit.co/videos/2795/2795-720.mp4', poster:'https://images.unsplash.com/photo-1586523969943-2d62e3f0e2f5?auto=format&fit=crop&w=1920&q=80'},
-  {label:'Whale Watching', src:'https://assets.mixkit.co/videos/2951/2951-720.mp4', poster:'https://images.unsplash.com/photo-1568430462989-44163eb1752f?auto=format&fit=crop&w=1920&q=80'}
+  {label:'Elephant National Park', src:'https://cdn.coverr.co/videos/coverr-an-elephant-in-a-national-park-4648/1080p.mp4', poster:'https://images.unsplash.com/photo-1547721064-da6cfb341d50?auto=format&fit=crop&w=1920&q=80'},
+  {label:'Elephants Walking',      src:'https://assets.mixkit.co/videos/preview/mixkit-elephants-walking-in-a-field-43518-large.mp4', poster:'https://images.unsplash.com/photo-1564760055775-d63b17a55c44?auto=format&fit=crop&w=1920&q=80'},
+  {label:'Aerial Wildlife Area',   src:'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-a-forest-and-wildlife-area-41527-large.mp4', poster:'https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&w=1920&q=80'}
 ];
 const HERO_SECONDS=9; // seconds each clip plays before crossfading to the next
 (function heroPlaylist(){
   const bg=$('heroBg'),dots=$('heroDots');
-  let slots=[]; // two stacked <img>/<video> pairs per index for crossfade
+  let slots=[]; // stacked <img>/<video> pair per index for crossfade
   VIDEOS.forEach((v,i)=>{
     const wrap=document.createElement('div');
     wrap.className='absolute inset-0 w-full h-full';
