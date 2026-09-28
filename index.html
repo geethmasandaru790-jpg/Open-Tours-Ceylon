@@ -156,12 +156,18 @@
           <input id="fDuration" class="field" required maxlength="30" placeholder="e.g. 1 Day, 8 hours">
         </div>
         <div class="sm:col-span-2">
-          <label class="block text-xs font-medium text-slate-400 mb-1" for="fPhoto">High-Resolution Photo URL *</label>
-          <input id="fPhoto" type="url" class="field" required placeholder="https://images.unsplash.com/...">
+          <label class="block text-xs font-medium text-slate-400 mb-1" for="fPhotos">Tour Photos (up to 3) *</label>
+          <input id="fPhotos" type="file" accept="image/*" multiple class="field cursor-pointer file:mr-3 file:rounded-lg file:border-0 file:bg-amber-500 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-slate-900 hover:file:bg-amber-400">
+          <p class="mt-1 text-xs text-slate-500">Select 1 to 3 photos from your device or gallery. The first photo is the cover image.</p>
+          <div id="photoPreview" class="mt-3 flex gap-2"></div>
         </div>
         <div class="sm:col-span-2">
           <label class="block text-xs font-medium text-slate-400 mb-1" for="fDesc">Detailed Itinerary / Description *</label>
           <textarea id="fDesc" rows="4" class="field" required maxlength="600" placeholder="Describe the route, stops and what is included (separate inclusions with commas if you like)."></textarea>
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-xs font-medium text-slate-400 mb-1" for="fLicense">Driving License / NIC Number (private, admin only) *</label>
+          <input id="fLicense" class="field" required maxlength="20" autocomplete="off" placeholder="e.g. B1234567 / 199512345678">
         </div>
         <div class="sm:col-span-2">
           <label class="block text-xs font-medium text-slate-400 mb-1" for="fWa">Your WhatsApp Number (private, admin only) *</label>
@@ -287,17 +293,72 @@
     }
     function showError(msg) { formError.textContent = msg; formError.classList.remove('hidden'); }
 
+    // Photo upload: FileReader -> Data URL (resized so phone photos stay lightweight)
+    const fPhotos = document.getElementById('fPhotos');
+    const photoPreview = document.getElementById('photoPreview');
+    let pickedPhotos = [];
+    let photosPending = false;
+
+    const readAsDataURL = file => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
+    });
+
+    const shrinkImage = dataUrl => new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => {
+        const max = 1280;
+        const scale = Math.min(1, max / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.onerror = () => resolve(null);
+      img.src = dataUrl;
+    });
+
+    function renderPreview() {
+      photoPreview.innerHTML = pickedPhotos.map((p, k) =>
+        `<div class="w-16 h-16 rounded-lg overflow-hidden border-2 ${k === 0 ? 'border-amber-400' : 'border-slate-600'}"><img src="${esc(p)}" alt="Selected photo ${k + 1}" class="w-full h-full object-cover"></div>`).join('');
+    }
+
+    fPhotos.addEventListener('change', async () => {
+      formError.classList.add('hidden');
+      const all = Array.from(fPhotos.files);
+      const files = all.filter(f => f.type.startsWith('image/')).slice(0, 3);
+      pickedPhotos = [];
+      renderPreview();
+      if (all.length > 3) showError('You can upload up to 3 photos. Only the first 3 were kept.');
+      else if (all.length && !files.length) showError('Please select image files only.');
+      if (!files.length) return;
+      photosPending = true;
+      photoPreview.innerHTML = '<p class="text-xs text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1"></i>Processing photos...</p>';
+      try {
+        const list = await Promise.all(files.map(async f => shrinkImage(await readAsDataURL(f))));
+        pickedPhotos = list.filter(Boolean);
+        if (!pickedPhotos.length) showError('Could not read the selected photos. Please try different images.');
+      } catch (_) {
+        pickedPhotos = [];
+        showError('Could not read the selected photos. Please try again.');
+      }
+      photosPending = false;
+      renderPreview();
+    });
+
     form.addEventListener('submit', e => {
       e.preventDefault();
       const v = id => document.getElementById(id).value.trim();
-      const name = v('fName'), title = v('fTitle'), duration = v('fDuration'), photo = v('fPhoto'), desc = v('fDesc'), wa = v('fWa');
+      const name = v('fName'), title = v('fTitle'), duration = v('fDuration'), desc = v('fDesc'), license = v('fLicense'), wa = v('fWa');
       const price = parseFloat(v('fPrice'));
 
-      if (!name || !title || !duration || !photo || !desc || !wa) return showError('Please complete all fields.');
+      if (!name || !title || !duration || !desc || !license || !wa) return showError('Please complete all fields.');
       if (!(price > 0)) return showError('Please enter a valid rate in USD.');
-      let url;
-      try { url = new URL(photo); } catch (_) { return showError('Please enter a valid photo URL.'); }
-      if (!/^https?:$/.test(url.protocol)) return showError('Photo URL must start with http:// or https://');
+      if (photosPending) return showError('Your photos are still processing. Please wait a moment.');
+      if (!pickedPhotos.length) return showError('Please upload at least one tour photo (up to 3).');
       const digits = wa.replace(/\D/g, '');
       if (digits.length < 9 || digits.length > 15) return showError('Please enter a valid WhatsApp number.');
 
@@ -305,22 +366,27 @@
       const parts = desc.split(/[,\n]/).map(s => s.trim()).filter(s => s && s.length <= 28).slice(0, 4);
       const includes = parts.length >= 2 ? parts : ['Driver-guide', 'Vehicle', 'Custom itinerary'];
 
-      tours.unshift({ title, operator: name, duration, price, unit: 'per day / package', photos: [photo], includes, desc: desc.length > 160 ? desc.slice(0, 157) + '...' : desc, isNew: true });
+      const photoCount = pickedPhotos.length;
+      tours.unshift({ title, operator: name, duration, price, unit: 'per day / package', photos: pickedPhotos.slice(), includes, desc: desc.length > 160 ? desc.slice(0, 157) + '...' : desc, isNew: true });
       render();
 
-      // Driver's number is only sent privately to the admin, never rendered on the site
+      // Driver's number and ID are only sent privately to the admin, never rendered on the site
       const adminMsg = [
         'New Driver Listing Submitted for Approval',
         `Driver/Company: ${name}`,
         `Tour: ${title}`,
         `Rate: $${price} (USD)`,
         `Duration: ${duration}`,
-        `Photo: ${photo}`,
+        `Photos: ${photoCount} uploaded (shown on the listing card)`,
         `Description: ${desc.slice(0, 400)}`,
+        `Driving License / NIC (internal only): ${license}`,
         `Driver WhatsApp (internal only): ${wa}`
       ].join('\n');
 
-      form.reset(); closeModal();
+      form.reset();
+      pickedPhotos = [];
+      photoPreview.innerHTML = '';
+      closeModal();
       document.getElementById('tours').scrollIntoView({ behavior: 'smooth' });
       toast('Listing added! Opening WhatsApp to notify our admin...');
       window.open(waLink(adminMsg), '_blank', 'noopener');
