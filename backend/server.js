@@ -28,13 +28,13 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ error: err.message || 'Internal server error.' });
 });
 
-const PORT = process.env.PORT || 4000;
+// backend/server.js
+// ... your middleware, routes, DB connection, etc.
 
-connectDB()
-  .then(() => {
-    app.listen(PORT, () => console.log(`[server] Open Tours Ceylon API listening on port ${PORT}`));
-  })
-  .catch((err) => {
-    console.error('[server] Failed to connect to database:', err.message);
-    process.exit(1);
-  });
+// Only listen locally — Vercel imports `app` directly
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+module.exports = app;
