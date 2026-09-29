@@ -37,5 +37,13 @@ if (process.env.NODE_ENV !== 'production') {
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
+const path = require('path');
 
+// Frontend ස්ටැටික් ෆයිල්ස් සර්ව් කිරීම සඳහා
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+// වෙනත් API රූට්ස් වලට අයිති නැති ඕනෑම රූට් එකක් සඳහා frontend/index.html එක පෙන්වීම
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+});
 module.exports = app;
