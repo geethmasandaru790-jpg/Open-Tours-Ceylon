@@ -33,6 +33,9 @@ body{transition:opacity .18s}body.sw{opacity:0}
 .heroDot{width:8px;height:8px;border-radius:9999px;background:rgba(255,255,255,.35);transition:background .3s,width .3s}
 .heroDot.on{background:#fbbf24;width:22px}
 .logoMark{filter:drop-shadow(0 1px 1px rgba(0,0,0,.4))}
+.vtag{display:inline-flex;align-items:center;gap:4px;padding:.2rem .55rem;border-radius:9999px;background:#0f172a;border:1px solid #334155;font-size:10px;color:#cbd5e1;white-space:nowrap}
+.vpill{padding:.15rem .5rem;border-radius:9999px;font-size:10px;font-weight:700}
+.gridsm{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.5rem}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-300 font-sans antialiased">
@@ -46,11 +49,8 @@ body{transition:opacity .18s}body.sw{opacity:0}
         <line x1="32" y1="3" x2="32" y2="10"/><line x1="32" y1="54" x2="32" y2="61"/>
         <line x1="3" y1="32" x2="10" y2="32"/><line x1="54" y1="32" x2="61" y2="32"/>
       </g>
-      <!-- Sri Lanka map silhouette -->
       <path d="M30 10c4.5 1.5 7 5 7.8 9.5.7 4-.6 6.5 0 10 .6 3.5 3 5 2.6 9-.3 3.2-2.3 6.6-5.8 9.8-.9.8-1.6 2.2-1.8 3.7-.2 1.6-1.5 2.4-2.6 1.4-1.4-1.3-1.1-3.1-2.4-4.4-2.7-2.7-4.4-6-4.5-9.6-.1-3.7 1.6-6 1.3-9.6-.3-3.6-2.6-6-2.6-9.8 0-4.3 3.1-8.4 8-10z" fill="#166534"/>
-      <!-- Elephant silhouette (left) -->
       <path d="M13 40c-1.8-.3-3-1.7-3-3.3 0-1.5.9-2.6 2.2-3.1-.6-1.6-.3-3.4 1-4.6 1.6-1.5 3.9-1.6 5.6-.4.9-1.1 2.3-1.7 3.8-1.5 2.3.3 4 2.3 4 4.6v3.9c0 .7-.1 1.4-.4 2l-.9 2c-.3.6-.9 1-1.6 1h-1.1v2.1a.9.9 0 01-1.8 0V40h-1.4v2.1a.9.9 0 01-1.8 0V40H13z" fill="#F59E0B" opacity=".92"/>
-      <!-- Leopard silhouette (right) -->
       <path d="M50.5 41.5c1.6.3 2.9-.7 3.7-1.9.6-1 .5-2.2-.2-3 .9-.8 1.2-2.1.6-3.2-.7-1.4-2.4-2-3.9-1.5-.5-1.2-1.6-2-2.9-2.1-2-.2-3.8 1.2-4.2 3.1l-.6 2.9c-.1.6 0 1.2.3 1.7l.9 1.6c.3.5.9.8 1.5.7l.8-.1.3 1.8a.8.8 0 001.6-.1l-.1-1.8 1.2-.2.4 1.8a.8.8 0 001.6-.2l-.4-1.8.4-.1z" fill="#166534" opacity=".92"/>
       <circle cx="31.3" cy="24" r="1.6" fill="#0f172a"/>
     </svg>
@@ -152,6 +152,9 @@ body{transition:opacity .18s}body.sw{opacity:0}
     <div><label class="lbl" data-i="f_dest"></label><input id="fDest" class="field" maxlength="40" data-p="p_dest"></div>
     <div><label class="lbl" data-i="f_price"></label><input id="fPrice" type="number" min="1" class="field" placeholder="80"></div>
     <div class="sm:col-span-2"><label class="lbl" data-i="f_dur"></label><input id="fDur" class="field" maxlength="30" data-p="p_dur"></div>
+    <div><label class="lbl" data-i="f_vtype"></label><input id="fVType" class="field" maxlength="30" data-p="p_vtype"></div>
+    <div><label class="lbl" data-i="f_vseat"></label><input id="fVSeat" type="number" min="1" max="60" class="field" placeholder="6"></div>
+    <label class="flex gap-2 items-center text-sm text-slate-300 sm:col-span-2"><input id="fVAc" type="checkbox" class="accent-amber-500 w-4 h-4" checked><span data-i="f_vac"></span></label>
     <div class="sm:col-span-2"><label class="lbl" data-i="f_photos"></label><input id="fPhotos" type="file" accept="image/*" multiple class="field"><div id="pv" class="mt-2 flex gap-2"></div></div>
     <div class="sm:col-span-2"><label class="lbl" data-i="f_desc"></label><textarea id="fDesc" rows="3" maxlength="600" class="field" data-p="p_desc"></textarea></div>
     <div class="sm:col-span-2"><label class="lbl" data-i="f_lic"></label><input id="fLic" class="field" maxlength="20" autocomplete="off" data-p="p_lic"></div>
@@ -185,6 +188,32 @@ body{transition:opacity .18s}body.sw{opacity:0}
     <input id="vName" class="field" maxlength="40" data-p="rv_name"><textarea id="vTxt" rows="3" maxlength="300" class="field" data-p="rv_txt"></textarea>
     <button class="py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold" data-i="rv_send"></button>
   </form>
+</div></div>
+
+<!-- VEHICLE & INSPECTION MODAL -->
+<div id="m-veh" class="ov"><div class="box max-w-2xl">
+  <div class="flex justify-between items-center mb-3"><h3 class="text-xl font-bold text-white"><i class="fa-solid fa-car-side text-amber-400 mr-2"></i><span data-i="vh_title"></span></h3><button data-close class="w-9 h-9 rounded-full hover:bg-slate-700" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+  <p id="vhTourName" class="text-amber-400 text-sm font-semibold mb-3"></p>
+
+  <div class="flex flex-wrap gap-2 mb-4" id="vhBadges"></div>
+
+  <h4 data-i="vh_photos" class="text-white text-sm font-semibold mb-2"></h4>
+  <div id="vhPhotos" class="gridsm mb-4"></div>
+
+  <div class="grid sm:grid-cols-2 gap-4 mb-4">
+    <div class="p-3 rounded-xl bg-slate-900 border border-slate-700">
+      <h4 data-i="vh_layout" class="text-white text-sm font-semibold mb-1"></h4>
+      <p id="vhLayout" class="text-sm text-slate-400"></p>
+    </div>
+    <div class="p-3 rounded-xl bg-slate-900 border border-slate-700">
+      <h4 data-i="vh_luggage" class="text-white text-sm font-semibold mb-1"></h4>
+      <p id="vhLuggage" class="text-sm text-slate-400"></p>
+    </div>
+  </div>
+
+  <h4 data-i="vh_inspect" class="text-white text-sm font-semibold mb-2"></h4>
+  <div id="vhInspect" class="grid gap-2 mb-2"></div>
+  <p id="vhInspectDate" class="text-xs text-slate-500"></p>
 </div></div>
 
 <!-- AUTH MODAL (optional sign-in) -->
@@ -226,41 +255,56 @@ const D={en:{home:'Home',tours:'Tours',how:'How It Works',list:'List Your Tour',
 h1:'Book Trusted Sri Lankan Driver-Guides in Minutes',sub:'Browse tours priced by local experts, then confirm everything with our team on WhatsApp. Safe, simple and personal.',
 browse:'Browse Tours',driver:"I'm a Driver / Guide",gt:'Tourist Satisfaction Guarantee',gd:'Not happy with your tour? Tell us and we will make it right.',rep:'Report a Problem',
 avail:'Available Tours',p_s:'Search destination, tour or driver...',all_d:'All Destinations',any_t:'Any Duration',all_r:'All Drivers',half:'Half Day',day:'Full Day',multi:'Multi-Day',
-book:'Book via WhatsApp',rate:'Rate & Review',feat:'Featured',none:'No tours match your search.',
+book:'Book via WhatsApp',rate:'Rate & Review',feat:'Featured',none:'No tours match your search.',veh_btn:'View Vehicle & Inspection',
 s1:'1. Choose a Tour',s1d:'Compare photos, inclusions and prices set by local driver-guides.',s2:'2. Message Our Team',s2d:'Tap Book via WhatsApp and we confirm dates, pickup and payment.',s3:'3. Enjoy the Journey',s3d:'Your verified driver-guide meets you and the adventure begins.',
 f_name:'Driver / Company Name *',f_title:'Tour Title *',f_dest:'Destination *',f_price:'Daily / Package Rate (USD) *',f_dur:'Tour Duration *',f_photos:'Tour Photos (1 required, up to 3) *',f_desc:'Detailed Itinerary / Description *',
+f_vtype:'Vehicle Type (e.g. KDH Van, Jeep) *',f_vseat:'Seating Capacity *',f_vac:'Vehicle has Air Conditioning (A/C)',
 f_lic:'Driving License / NIC Number (private, admin only) *',f_idp:'Upload Driving License / NIC Photo *',f_wa:'Your WhatsApp Number (private, admin only) *',
 terms:'I agree to Open Tours Ceylon Driver Terms & Conditions (10% platform commission on confirmed bookings, professional conduct, and prioritizing tourist satisfaction) *',
 submit:'Submit Listing',cancel:'Cancel',priv:'Your phone number is for admin records only and is never shown to tourists. All bookings go through Open Tours Ceylon.',
-p_name:'e.g. Nimal Tours',p_title:'e.g. Kandy Cultural Day Trip',p_dest:'e.g. Kandy',p_dur:'e.g. 1 Day, 8 hours',p_desc:'Route, stops, inclusions (comma separated)',p_lic:'e.g. B1234567 / 199512345678',p_wa:'+94 77 123 4567',
+p_name:'e.g. Nimal Tours',p_title:'e.g. Kandy Cultural Day Trip',p_dest:'e.g. Kandy',p_dur:'e.g. 1 Day, 8 hours',p_desc:'Route, stops, inclusions (comma separated)',p_lic:'e.g. B1234567 / 199512345678',p_wa:'+94 77 123 4567',p_vtype:'e.g. Toyota KDH Van',
 rv_title:'Rate & Review',rv_name:'Your name',rv_txt:'Share your experience...',rv_send:'Submit Review',
 rp_title:'Report a Problem',rp_name:'Your name',rp_contact:'WhatsApp / Email',rp_tour:'Tour / driver name',rp_msg:'Describe the problem...',rp_send:'Send via WhatsApp',
 au_title:'Tourist Account',au_sub:'Optional: sign in to save your booking history and favourite tours. You can book without an account.',au_hist:'Booking history',au_fav:'Favourites',au_out:'Sign out',
+vh_title:'Vehicle & Inspection Details',vh_photos:'Exterior & Interior Photos',vh_layout:'Seating Layout',vh_luggage:'Luggage Capacity',vh_inspect:'Inspection Status',
+ac_yes:'A/C',ac_no:'Non-A/C',seats:'Seats',
+ins_ac:'A/C working condition',ins_safety:'Safety features (seatbelts, first-aid kit)',ins_maint:'Maintenance status',
 ok_list:'Listing added! Opening WhatsApp to notify our admin...',ok_rv:'Thank you for your review!',reviews:'reviews'},
 si:{home:'මුල් පිටුව',tours:'සංචාර',how:'ක්‍රියා කරන ආකාරය',list:'සංචාරයක් ඇතුළත් කරන්න',contact:'අප අමතන්න',badge:'සත්‍යාපිත රියදුරු-මාර්ගෝපදේශකයින් පමණි',
 h1:'විශ්වාසදායක ශ්‍රී ලාංකික රියදුරු-මාර්ගෝපදේශකයින් මිනිත්තු කිහිපයකින් වෙන්කරගන්න',sub:'දේශීය විශේෂඥයින් මිල නියම කළ සංචාර බලා, WhatsApp හරහා අපගේ කණ්ඩායම සමඟ සියල්ල තහවුරු කරගන්න.',
 browse:'සංචාර බලන්න',driver:'මම රියදුරෙක් / මාර්ගෝපදේශකයෙක්',gt:'සංචාරක තෘප්තිමත් භාවය සහතිකය',gd:'ඔබේ සංචාරය ගැන සතුටු නැද්ද? අපට දන්වන්න, අපි එය නිවැරදි කරමු.',rep:'ගැටලුවක් වාර්තා කරන්න',
 avail:'පවතින සංචාර',p_s:'ගමනාන්තය, සංචාරය හෝ රියදුරු සොයන්න...',all_d:'සියලු ගමනාන්ත',any_t:'ඕනෑම කාලයක්',all_r:'සියලු රියදුරන්',half:'අඩ දිනය',day:'සම්පූර්ණ දිනය',multi:'දින කිහිපය',
-book:'WhatsApp හරහා වෙන්කරන්න',rate:'ඇගයීම් කරන්න',feat:'විශේෂිත',none:'ඔබේ සෙවුමට ගැළපෙන සංචාර නැත.',
+book:'WhatsApp හරහා වෙන්කරන්න',rate:'ඇගයීම් කරන්න',feat:'විශේෂිත',none:'ඔබේ සෙවුමට ගැළපෙන සංචාර නැත.',veh_btn:'වාහන විස්තර බලන්න',
 s1:'1. සංචාරයක් තෝරන්න',s1d:'දේශීය රියදුරු-මාර්ගෝපදේශකයින් නියම කළ මිල සහ ඇතුළත් දේ බලන්න.',s2:'2. අපගේ කණ්ඩායමට පණිවිඩ කරන්න',s2d:'WhatsApp බොත්තම ඔබන්න; දිනය, ගමන ආරම්භ ස්ථානය සහ ගෙවීම අපි තහවුරු කරමු.',s3:'3. ගමන රසවිඳින්න',s3d:'සත්‍යාපිත රියදුරු-මාර්ගෝපදේශකයා ඔබව හමුවේ.',
 f_name:'රියදුරු / සමාගමේ නම *',f_title:'සංචාරයේ නම *',f_dest:'ගමනාන්තය *',f_price:'දෛනික / පැකේජ මිල (USD) *',f_dur:'සංචාරයේ කාලය *',f_photos:'ඡායාරූප (අවම 1, උපරිම 3) *',f_desc:'විස්තර / ගමන් සැලැස්ම *',
+f_vtype:'වාහන වර්ගය (උදා: KDH Van, Jeep) *',f_vseat:'ආසන ධාරිතාව *',f_vac:'වායු සමීකරණය (A/C) ඇත',
 f_lic:'රියදුරු බලපත්‍ර / ජා.හැ.අ. අංකය (පෞද්ගලික) *',f_idp:'බලපත්‍රයේ / ජා.හැ.අ. ඡායාරූපය උඩුගත කරන්න *',f_wa:'ඔබේ WhatsApp අංකය (පෞද්ගලික) *',
 terms:'මම Open Tours Ceylon රියදුරු නියමයන්ට එකඟ වෙමි (තහවුරු කළ වෙන්කිරීම් මත 10% වේදිකා කොමිස්, වෘත්තීය හැසිරීම, සහ සංචාරක තෘප්තිමත් භාවයට මුල් තැන දීම) *',
 submit:'යවන්න',cancel:'අවලංගු කරන්න',priv:'ඔබේ දුරකථන අංකය පරිපාලකයාට පමණි; සංචාරකයින්ට කිසිවිටෙක නොපෙන්වයි.',
-p_name:'උදා: නිමල් ටුවර්ස්',p_title:'උදා: මහනුවර සංස්කෘතික සංචාරය',p_dest:'උදා: මහනුවර',p_dur:'උදා: එක් දිනය, පැය 8',p_desc:'මාර්ගය, නවතින ස්ථාන, ඇතුළත් දේ',p_lic:'උදා: B1234567',p_wa:'+94 77 123 4567',
+p_name:'උදා: නිමල් ටුවර්ස්',p_title:'උදා: මහනුවර සංස්කෘතික සංචාරය',p_dest:'උදා: මහනුවර',p_dur:'උදා: එක් දිනය, පැය 8',p_desc:'මාර්ගය, නවතින ස්ථාන, ඇතුළත් දේ',p_lic:'උදා: B1234567',p_wa:'+94 77 123 4567',p_vtype:'උදා: Toyota KDH Van',
 rv_title:'ඇගයීම් කරන්න',rv_name:'ඔබේ නම',rv_txt:'ඔබේ අත්දැකීම බෙදාගන්න...',rv_send:'ඇගයීම යවන්න',
 rp_title:'ගැටලුවක් වාර්තා කරන්න',rp_name:'ඔබේ නම',rp_contact:'WhatsApp / ඊමේල්',rp_tour:'සංචාරය / රියදුරාගේ නම',rp_msg:'ගැටලුව විස්තර කරන්න...',rp_send:'WhatsApp හරහා යවන්න',
 au_title:'සංචාරක ගිණුම',au_sub:'විකල්පයි: වෙන්කිරීම් ඉතිහාසය සහ ප්‍රියතම සංචාර සුරැකීමට ඇතුල් වන්න. ගිණුමක් නැතිවත් වෙන්කරගත හැක.',au_hist:'වෙන්කිරීම් ඉතිහාසය',au_fav:'ප්‍රියතම',au_out:'ඉවත් වන්න',
+vh_title:'වාහන හා පරීක්ෂණ විස්තර',vh_photos:'පිටත සහ ඇතුළත ඡායාරූප',vh_layout:'ආසන සැලසුම',vh_luggage:'ලගේජ් ධාරිතාව',vh_inspect:'පරීක්ෂණ තත්ත්වය',
+ac_yes:'A/C',ac_no:'Non-A/C',seats:'ආසන',
+ins_ac:'A/C ක්‍රියාකාරී තත්ත්වය',ins_safety:'ආරක්ෂක උපාංග (සීට් බෙල්ට්, ප්‍රථමාධාර කට්ටලය)',ins_maint:'නඩත්තු තත්ත්වය',
 ok_list:'ඇතුළත් කළා! පරිපාලකයාට දැනුම් දීමට WhatsApp විවෘත වේ...',ok_rv:'ඔබේ ඇගයීමට ස්තූතියි!',reviews:'ඇගයීම්'}};
 let L=ls.get('lang','en');const t=k=>D[L][k]||D.en[k]||k;
 
 /* ---------- Data (sponsored:true = Featured / paid promotion badge) ---------- */
 const IMG=['https://images.unsplash.com/photo-1586523969943-2d62e3f0e2f5?auto=format&fit=crop&w=900&q=80','https://images.unsplash.com/photo-1566766189268-ec8d7e5cf9a8?auto=format&fit=crop&w=900&q=80','https://images.unsplash.com/photo-1568430462989-44163eb1752f?auto=format&fit=crop&w=900&q=80'];
+const VIMG=['https://images.unsplash.com/photo-1600661653561-629509216228?auto=format&fit=crop&w=600&q=80','https://images.unsplash.com/photo-1568844293986-8d0400bd4745?auto=format&fit=crop&w=600&q=80','https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=600&q=80','https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80'];
 const savedRv=ls.get('rv',{});
 const tours=[
-{id:1,title:'Sigiriya Day Tour',dest:'Sigiriya',operator:'Verified Partner',duration:'1 Day (12 hrs)',dur:'day',price:65,unit:'per person',sponsored:true,photos:IMG,includes:['Private A/C vehicle','English-speaking guide','Village lunch','Water'],desc:'Climb the legendary Lion Rock fortress, admire the ancient frescoes and enjoy a village lunch.',reviews:[{s:5,n:'Anna',x:'Amazing guide!'},{s:5,n:'Mark',x:'Perfect day.'},{s:4,n:'Li',x:'Great value.'}]},
-{id:2,title:'Ella Scenic Trip',dest:'Ella',operator:'Verified Partner',duration:'3 Days / 2 Nights',dur:'multi',price:120,unit:'per day',photos:[IMG[1],IMG[0]],includes:['Driver-guide','Fuel & parking','Tea factory visit','Nine Arches Bridge'],desc:"Wind through the hill country, hike Little Adam's Peak and visit a tea plantation.",reviews:[{s:5,n:'Sara',x:'Stunning views.'},{s:4,n:'Tom',x:'Very friendly driver.'}]},
-{id:3,title:'Mirissa Whale Watching',dest:'Mirissa',operator:'Verified Partner',duration:'Half Day (5 hrs)',dur:'half',price:45,unit:'per person',photos:[IMG[2],IMG[0]],includes:['Boat ticket','Breakfast','Life jacket','Hotel pickup'],desc:"Sail out at sunrise to spot blue whales and dolphins, then relax on Mirissa's golden beach.",reviews:[{s:5,n:'Joy',x:'Saw blue whales!'}]}];
+{id:1,title:'Sigiriya Day Tour',dest:'Sigiriya',operator:'Verified Partner',duration:'1 Day (12 hrs)',dur:'day',price:65,unit:'per person',sponsored:true,photos:IMG,includes:['Private A/C vehicle','English-speaking guide','Village lunch','Water'],desc:'Climb the legendary Lion Rock fortress, admire the ancient frescoes and enjoy a village lunch.',
+  vehicle:{type:'Toyota KDH Van',ac:true,seats:9,photos:[VIMG[0],VIMG[1],VIMG[2]],layout:'3 rows of forward-facing reclining seats, wide aisle access, large windows for sightseeing.',luggage:'Rear compartment fits 4 large suitcases + 4 carry-ons.',inspect:{ac:'ok',safety:'ok',maint:'ok'},inspectedAt:'2026-08-14'},
+  reviews:[{s:5,n:'Anna',x:'Amazing guide!'},{s:5,n:'Mark',x:'Perfect day.'},{s:4,n:'Li',x:'Great value.'}]},
+{id:2,title:'Ella Scenic Trip',dest:'Ella',operator:'Verified Partner',duration:'3 Days / 2 Nights',dur:'multi',price:120,unit:'per day',photos:[IMG[1],IMG[0]],includes:['Driver-guide','Fuel & parking','Tea factory visit','Nine Arches Bridge'],desc:"Wind through the hill country, hike Little Adam's Peak and visit a tea plantation.",
+  vehicle:{type:'Toyota Axio Sedan',ac:true,seats:4,photos:[VIMG[3],VIMG[1]],layout:'Standard 4-seat sedan layout with front and rear bench seating.',luggage:'Trunk fits 2 medium suitcases + 2 backpacks.',inspect:{ac:'ok',safety:'ok',maint:'warn'},inspectedAt:'2026-07-02'},
+  reviews:[{s:5,n:'Sara',x:'Stunning views.'},{s:4,n:'Tom',x:'Very friendly driver.'}]},
+{id:3,title:'Mirissa Whale Watching',dest:'Mirissa',operator:'Verified Partner',duration:'Half Day (5 hrs)',dur:'half',price:45,unit:'per person',photos:[IMG[2],IMG[0]],includes:['Boat ticket','Breakfast','Life jacket','Hotel pickup'],desc:"Sail out at sunrise to spot blue whales and dolphins, then relax on Mirissa's golden beach.",
+  vehicle:{type:'Mini Bus (Hotel Transfer)',ac:false,seats:12,photos:[VIMG[2],VIMG[0]],layout:'4 rows of bench seating, open-window ventilation, side entry door.',luggage:'Overhead racks + rear rack for small bags only.',inspect:{ac:'na',safety:'ok',maint:'ok'},inspectedAt:'2026-06-20'},
+  reviews:[{s:5,n:'Joy',x:'Saw blue whales!'}]}];
 tours.forEach(x=>{if(savedRv[x.id])x.reviews.push(...savedRv[x.id])});
 let favs=ls.get('favs',[]),user=ls.get('user',null),hist=ls.get('hist',[]),nextId=10;
 
@@ -323,6 +367,14 @@ function fillFilters(){
   $('fr').innerHTML=opt('',t('all_r'))+[...new Set(tours.map(x=>x.operator))].map(d=>opt(d,d)).join('');
   $('fd').value=keep[0]||'';$('ft').value=keep[1]||'';$('fr').value=keep[2]||'';
 }
+function vehicleBadges(v){
+  if(!v)return'';
+  return `<div class="flex flex-wrap gap-1.5 mt-2">
+    <span class="vtag"><i class="fa-solid fa-van-shuttle text-amber-400"></i>${esc(v.type)}</span>
+    <span class="vtag ${v.ac?'text-emerald-300':'text-slate-400'}"><i class="fa-solid ${v.ac?'fa-snowflake text-emerald-400':'fa-fan'}"></i>${v.ac?t('ac_yes'):t('ac_no')}</span>
+    <span class="vtag"><i class="fa-solid fa-chair text-amber-400"></i>${v.seats} ${t('seats')}</span>
+  </div>`;
+}
 function card(x,i){
   const a=avg(x),fav=favs.includes(x.id);
   const th=x.photos.length>1?`<div class="absolute bottom-2 left-2 hidden sm:flex gap-2">${x.photos.map((p,k)=>`<button type="button" data-thumb="${k}" class="w-9 h-9 rounded-lg overflow-hidden border-2 ${k?'border-white/40':'border-amber-400'}"><img src="${esc(p)}" alt="" class="w-full h-full object-cover"></button>`).join('')}</div>`:'';
@@ -337,10 +389,12 @@ function card(x,i){
     <h3 class="font-display text-sm sm:text-xl font-bold text-white leading-snug">${esc(x.title)}</h3>
     <p class="text-[11px] sm:text-xs text-amber-400 mt-1"><i class="fa-solid fa-location-dot mr-1"></i>${esc(x.dest)} · ${esc(x.operator)}</p>
     <p class="mt-1 text-xs text-slate-400 flex items-center gap-1 flex-wrap">${stars(a)} <span>${a?a.toFixed(1):'–'} (${x.reviews.length} ${t('reviews')})</span></p>
+    ${vehicleBadges(x.vehicle)}
     <p class="hidden sm:block mt-3 text-sm text-slate-400">${esc(x.desc)}</p>
     <div class="hidden sm:flex flex-wrap gap-2 mt-3 flex-1 content-start">${chips}</div>
     <p class="mt-3 pt-3 border-t border-slate-700 text-lg sm:text-2xl font-bold text-amber-400">$${esc(x.price)} <span class="text-xs font-normal text-slate-400">${esc(x.unit)}</span></p>
-    <a data-book href="${wa(`Hi, I want to book ${x.title} for $${x.price}`)}" target="_blank" rel="noopener" class="mt-3 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white text-xs sm:text-base font-semibold py-2.5 rounded-xl"><i class="fa-brands fa-whatsapp text-lg"></i>${t('book')}</a>
+    ${x.vehicle?`<button data-veh class="mt-3 flex items-center justify-center gap-2 border border-slate-600 hover:border-amber-400 hover:text-amber-400 text-slate-300 text-xs sm:text-sm font-semibold py-2.5 rounded-xl"><i class="fa-solid fa-magnifying-glass"></i>${t('veh_btn')}</button>`:''}
+    <a data-book href="${wa(`Hi, I want to book ${x.title} for $${x.price}`)}" target="_blank" rel="noopener" class="mt-2 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white text-xs sm:text-base font-semibold py-2.5 rounded-xl"><i class="fa-brands fa-whatsapp text-lg"></i>${t('book')}</a>
     <button data-rev class="mt-2 text-xs sm:text-sm text-slate-400 hover:text-amber-400"><i class="fa-regular fa-star mr-1"></i>${t('rate')}</button>
   </div></article>`}
 function render(){
@@ -357,7 +411,33 @@ $('grid').addEventListener('click',e=>{
   if(e.target.closest('[data-main]'))return lbOpen(x.photos,+m.dataset.i0);
   if(e.target.closest('[data-fav]')){favs=favs.includes(x.id)?favs.filter(i=>i!==x.id):[...favs,x.id];ls.set('favs',favs);return render()}
   if(e.target.closest('[data-rev]')){revId=x.id;stars0=0;$('rvT').textContent=x.title;pickStars();return open('m-rev')}
+  if(e.target.closest('[data-veh]'))return vehOpen(x);
   if(e.target.closest('[data-book]')&&user){hist.unshift({title:x.title,price:x.price,at:new Date().toLocaleDateString()});ls.set('hist',hist)}});
+
+/* ---------- Vehicle & Inspection modal ---------- */
+function vehOpen(x){
+  const v=x.vehicle;if(!v)return;
+  $('vhTourName').textContent=x.title;
+  $('vhBadges').innerHTML=`
+    <span class="vpill bg-slate-900 border border-slate-700 text-slate-200"><i class="fa-solid fa-van-shuttle mr-1 text-amber-400"></i>${esc(v.type)}</span>
+    <span class="vpill ${v.ac?'bg-emerald-500/15 border border-emerald-500/40 text-emerald-300':'bg-slate-900 border border-slate-700 text-slate-400'}"><i class="fa-solid ${v.ac?'fa-snowflake':'fa-fan'} mr-1"></i>${v.ac?t('ac_yes'):t('ac_no')}</span>
+    <span class="vpill bg-slate-900 border border-slate-700 text-slate-200"><i class="fa-solid fa-chair mr-1 text-amber-400"></i>${v.seats} ${t('seats')}</span>`;
+  $('vhPhotos').innerHTML=v.photos.map((p,k)=>`<button type="button" data-vphoto="${k}" class="rounded-lg overflow-hidden aspect-square border border-slate-700"><img src="${esc(p)}" alt="Vehicle photo ${k+1}" class="w-full h-full object-cover"></button>`).join('');
+  $('vhLayout').textContent=v.layout;
+  $('vhLuggage').textContent=v.luggage;
+  const rows=[['ins_ac',v.inspect.ac],['ins_safety',v.inspect.safety],['ins_maint',v.inspect.maint]];
+  const badge=s=>s==='ok'?'<span class="vpill bg-emerald-500/15 text-emerald-300 border border-emerald-500/40"><i class="fa-solid fa-circle-check mr-1"></i>OK</span>'
+    :s==='warn'?'<span class="vpill bg-amber-500/15 text-amber-300 border border-amber-500/40"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Check</span>'
+    :'<span class="vpill bg-slate-700/40 text-slate-400 border border-slate-600">N/A</span>';
+  $('vhInspect').innerHTML=rows.map(([k,s])=>`<div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900 border border-slate-700"><span class="text-sm text-slate-300">${t(k)}</span>${badge(s)}</div>`).join('');
+  $('vhInspectDate').textContent=(L==='si'?'පරීක්ෂණය: ':'Last inspected: ')+v.inspectedAt;
+  open('m-veh');
+}
+$('vhPhotos').addEventListener('click',e=>{
+  const b=e.target.closest('[data-vphoto]');if(!b)return;
+  const x=tours.find(v=>v.title===$('vhTourName').textContent);if(!x||!x.vehicle)return;
+  lbOpen(x.vehicle.photos,+b.dataset.vphoto);
+});
 
 /* ---------- Lightbox ---------- */
 let lbL=[],lbI=0;
@@ -414,8 +494,10 @@ $('fId').addEventListener('change',async()=>{
 /* ---------- Submit listing ---------- */
 $('lf').addEventListener('submit',e=>{e.preventDefault();
   const v=id=>$(id).value.trim(),name=v('fName'),title=v('fTitle'),dest=v('fDest'),dur=v('fDur'),desc=v('fDesc'),lic=v('fLic'),w=v('fWa'),price=parseFloat(v('fPrice'));
-  if(!name||!title||!dest||!dur||!desc||!lic||!w)return fErr('Please complete all required fields.');
+  const vtype=v('fVType'),vseat=parseInt($('fVSeat').value,10),vac=$('fVAc').checked;
+  if(!name||!title||!dest||!dur||!desc||!lic||!w||!vtype)return fErr('Please complete all required fields.');
   if(!(price>0))return fErr('Please enter a valid rate in USD.');
+  if(!(vseat>0))return fErr('Please enter a valid seating capacity.');
   if(pend)return fErr('Photos are still processing. Please wait.');
   if(!picked.length)return fErr('Please upload at least one tour photo (up to 3).');
   if(!$('fId').files.length)return fErr('Please upload a photo of your Driving License / NIC.');
@@ -426,8 +508,11 @@ $('lf').addEventListener('submit',e=>{e.preventDefault();
   if(!$('fTerms').checked)return fErr('You must agree to the Driver Terms & Conditions (10% commission).');
   const parts=desc.split(/[,\n]/).map(s=>s.trim()).filter(s=>s&&s.length<=28).slice(0,4);
   const kind=/night|days|multi/i.test(dur)&&!/^1 day/i.test(dur)?'multi':/half|\b[1-5]\s*h/i.test(dur)?'half':'day';
-  tours.unshift({id:nextId++,title,dest,operator:name,duration:dur,dur:kind,price,unit:'per day / package',photos:picked.slice(),includes:parts.length>=2?parts:['Driver-guide','Vehicle','Custom itinerary'],desc:desc.length>160?desc.slice(0,157)+'...':desc,reviews:[]});
-  const msg=['New Driver Listing Submitted for Approval',`Driver/Company: ${name}`,`Tour: ${title} (${dest})`,`Rate: $${price} USD`,`Duration: ${dur}`,`Photos: ${picked.length}`,`Description: ${desc.slice(0,400)}`,`Driving License / NIC (OCR-verified, internal): ${lic}`,`Driver WhatsApp (internal): ${w}`,'Driver Terms & 10% commission: ACCEPTED'].join('\n');
+  tours.unshift({id:nextId++,title,dest,operator:name,duration:dur,dur:kind,price,unit:'per day / package',photos:picked.slice(),
+    includes:parts.length>=2?parts:['Driver-guide','Vehicle','Custom itinerary'],desc:desc.length>160?desc.slice(0,157)+'...':desc,
+    vehicle:{type:vtype,ac:vac,seats:vseat,photos:picked.slice(),layout:'Details to be confirmed by the driver.',luggage:'Details to be confirmed by the driver.',inspect:{ac:vac?'ok':'na',safety:'ok',maint:'ok'},inspectedAt:new Date().toISOString().slice(0,10)},
+    reviews:[]});
+  const msg=['New Driver Listing Submitted for Approval',`Driver/Company: ${name}`,`Tour: ${title} (${dest})`,`Rate: $${price} USD`,`Duration: ${dur}`,`Vehicle: ${vtype}, ${vac?'A/C':'Non-A/C'}, ${vseat} seats`,`Photos: ${picked.length}`,`Description: ${desc.slice(0,400)}`,`Driving License / NIC (OCR-verified, internal): ${lic}`,`Driver WhatsApp (internal): ${w}`,'Driver Terms & 10% commission: ACCEPTED'].join('\n');
   $('lf').reset();picked=[];prev();ocr={s:'idle',x:''};tok++;idSt('');close('m-list');fillFilters();render();
   $('tours').scrollIntoView({behavior:'smooth'});toast(t('ok_list'));window.open(wa(msg),'_blank','noopener')});
 
