@@ -23,6 +23,7 @@ body{transition:opacity .18s}body.sw{opacity:0}
 @media(prefers-reduced-motion:reduce){.kb,.blob{animation:none}}
 .field{width:100%;background:#0f172a;border:1px solid #334155;border-radius:.75rem;padding:.6rem .85rem;color:#fff;font-size:.9rem;outline:none}
 .field:focus{border-color:#fbbf24;box-shadow:0 0 0 3px rgba(251,191,36,.15)}
+select.field{-webkit-appearance:none;appearance:none}
 .ov{display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:1rem;background:rgba(2,6,23,.85)}
 .ov.on{display:flex}
 .box{width:100%;max-width:40rem;max-height:92vh;overflow-y:auto;background:#1e293b;border:1px solid #334155;border-radius:1rem;padding:1.25rem}
@@ -152,9 +153,25 @@ body{transition:opacity .18s}body.sw{opacity:0}
     <div><label class="lbl" data-i="f_dest"></label><input id="fDest" class="field" maxlength="40" data-p="p_dest"></div>
     <div><label class="lbl" data-i="f_price"></label><input id="fPrice" type="number" min="1" class="field" placeholder="80"></div>
     <div class="sm:col-span-2"><label class="lbl" data-i="f_dur"></label><input id="fDur" class="field" maxlength="30" data-p="p_dur"></div>
-    <div><label class="lbl" data-i="f_vtype"></label><input id="fVType" class="field" maxlength="30" data-p="p_vtype"></div>
+
+    <div class="sm:col-span-2 pt-2 border-t border-slate-700"><p class="text-xs font-semibold text-amber-400 uppercase tracking-wide" data-i="v_section"></p></div>
+    <div class="sm:col-span-2"><label class="lbl" data-i="f_vmodel"></label><input id="fVModel" class="field" maxlength="60" data-p="p_vmodel"></div>
     <div><label class="lbl" data-i="f_vseat"></label><input id="fVSeat" type="number" min="1" max="60" class="field" placeholder="6"></div>
-    <label class="flex gap-2 items-center text-sm text-slate-300 sm:col-span-2"><input id="fVAc" type="checkbox" class="accent-amber-500 w-4 h-4" checked><span data-i="f_vac"></span></label>
+    <label class="flex gap-2 items-center text-sm text-slate-300"><input id="fVAc" type="checkbox" class="accent-amber-500 w-4 h-4" checked><span data-i="f_vac"></span></label>
+    <div class="sm:col-span-2"><label class="lbl" data-i="f_vlayout"></label><input id="fVLayout" class="field" maxlength="80" data-p="p_vlayout"></div>
+    <div class="sm:col-span-2"><label class="lbl" data-i="f_vluggage"></label><input id="fVLuggage" class="field" maxlength="80" data-p="p_vluggage"></div>
+    <div><label class="lbl" data-i="f_ins_ac"></label>
+      <select id="fInsAc" class="field"><option value="ok" data-i="ins_ok"></option><option value="warn" data-i="ins_warn"></option><option value="na" data-i="ins_na"></option></select>
+    </div>
+    <div><label class="lbl" data-i="f_ins_safety"></label>
+      <select id="fInsSafety" class="field"><option value="ok" data-i="ins_ok"></option><option value="warn" data-i="ins_warn"></option></select>
+    </div>
+    <div class="sm:col-span-2"><label class="lbl" data-i="f_ins_maint"></label>
+      <select id="fInsMaint" class="field"><option value="ok" data-i="ins_ok"></option><option value="warn" data-i="ins_warn"></option></select>
+    </div>
+    <div class="sm:col-span-2"><label class="lbl" data-i="f_vphotos"></label><input id="fVPhotos" type="file" accept="image/*" multiple class="field"><div id="pvV" class="mt-2 flex flex-wrap gap-2"></div></div>
+
+    <div class="sm:col-span-2 pt-2 border-t border-slate-700"></div>
     <div class="sm:col-span-2"><label class="lbl" data-i="f_photos"></label><input id="fPhotos" type="file" accept="image/*" multiple class="field"><div id="pv" class="mt-2 flex gap-2"></div></div>
     <div class="sm:col-span-2"><label class="lbl" data-i="f_desc"></label><textarea id="fDesc" rows="3" maxlength="600" class="field" data-p="p_desc"></textarea></div>
     <div class="sm:col-span-2"><label class="lbl" data-i="f_lic"></label><input id="fLic" class="field" maxlength="20" autocomplete="off" data-p="p_lic"></div>
@@ -192,7 +209,8 @@ body{transition:opacity .18s}body.sw{opacity:0}
 
 <!-- VEHICLE & INSPECTION MODAL -->
 <div id="m-veh" class="ov"><div class="box max-w-2xl">
-  <div class="flex justify-between items-center mb-3"><h3 class="text-xl font-bold text-white"><i class="fa-solid fa-car-side text-amber-400 mr-2"></i><span data-i="vh_title"></span></h3><button data-close class="w-9 h-9 rounded-full hover:bg-slate-700" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+  <div class="flex justify-between items-center mb-1"><h3 class="text-xl font-bold text-white"><i class="fa-solid fa-car-side text-amber-400 mr-2"></i><span data-i="vh_title"></span></h3><button data-close class="w-9 h-9 rounded-full hover:bg-slate-700" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+  <p id="vhModel" class="text-lg font-display font-bold text-white mb-1"></p>
   <p id="vhTourName" class="text-amber-400 text-sm font-semibold mb-3"></p>
 
   <div class="flex flex-wrap gap-2 mb-4" id="vhBadges"></div>
@@ -258,11 +276,16 @@ avail:'Available Tours',p_s:'Search destination, tour or driver...',all_d:'All D
 book:'Book via WhatsApp',rate:'Rate & Review',feat:'Featured',none:'No tours match your search.',veh_btn:'View Vehicle & Inspection',
 s1:'1. Choose a Tour',s1d:'Compare photos, inclusions and prices set by local driver-guides.',s2:'2. Message Our Team',s2d:'Tap Book via WhatsApp and we confirm dates, pickup and payment.',s3:'3. Enjoy the Journey',s3d:'Your verified driver-guide meets you and the adventure begins.',
 f_name:'Driver / Company Name *',f_title:'Tour Title *',f_dest:'Destination *',f_price:'Daily / Package Rate (USD) *',f_dur:'Tour Duration *',f_photos:'Tour Photos (1 required, up to 3) *',f_desc:'Detailed Itinerary / Description *',
-f_vtype:'Vehicle Type (e.g. KDH Van, Jeep) *',f_vseat:'Seating Capacity *',f_vac:'Vehicle has Air Conditioning (A/C)',
+v_section:'Vehicle Details',f_vmodel:'Vehicle Brand & Model (e.g. Toyota KDH High Roof) *',f_vseat:'Seating Capacity *',f_vac:'Vehicle has Air Conditioning (A/C)',
+f_vlayout:'Seating Arrangement / Layout (e.g. Reclining Seats, 3-row layout) *',f_vluggage:'Luggage Capacity (e.g. 4 Large Suitcases + 3 Handbags) *',
+f_ins_ac:'A/C Working Condition',f_ins_safety:'Safety Features',f_ins_maint:'Mechanical Maintenance Status',
+ins_ok:'Good / Working',ins_warn:'Needs Attention',ins_na:'Not Applicable',
+f_vphotos:'Vehicle Exterior & Interior Photos (up to 6) *',
 f_lic:'Driving License / NIC Number (private, admin only) *',f_idp:'Upload Driving License / NIC Photo *',f_wa:'Your WhatsApp Number (private, admin only) *',
 terms:'I agree to Open Tours Ceylon Driver Terms & Conditions (10% platform commission on confirmed bookings, professional conduct, and prioritizing tourist satisfaction) *',
 submit:'Submit Listing',cancel:'Cancel',priv:'Your phone number is for admin records only and is never shown to tourists. All bookings go through Open Tours Ceylon.',
-p_name:'e.g. Nimal Tours',p_title:'e.g. Kandy Cultural Day Trip',p_dest:'e.g. Kandy',p_dur:'e.g. 1 Day, 8 hours',p_desc:'Route, stops, inclusions (comma separated)',p_lic:'e.g. B1234567 / 199512345678',p_wa:'+94 77 123 4567',p_vtype:'e.g. Toyota KDH Van',
+p_name:'e.g. Nimal Tours',p_title:'e.g. Kandy Cultural Day Trip',p_dest:'e.g. Kandy',p_dur:'e.g. 1 Day, 8 hours',p_desc:'Route, stops, inclusions (comma separated)',p_lic:'e.g. B1234567 / 199512345678',p_wa:'+94 77 123 4567',
+p_vmodel:'e.g. Toyota KDH High Roof',p_vlayout:'e.g. Reclining Seats, 3-row layout',p_vluggage:'e.g. 4 Large Suitcases + 3 Handbags',
 rv_title:'Rate & Review',rv_name:'Your name',rv_txt:'Share your experience...',rv_send:'Submit Review',
 rp_title:'Report a Problem',rp_name:'Your name',rp_contact:'WhatsApp / Email',rp_tour:'Tour / driver name',rp_msg:'Describe the problem...',rp_send:'Send via WhatsApp',
 au_title:'Tourist Account',au_sub:'Optional: sign in to save your booking history and favourite tours. You can book without an account.',au_hist:'Booking history',au_fav:'Favourites',au_out:'Sign out',
@@ -277,11 +300,16 @@ avail:'පවතින සංචාර',p_s:'ගමනාන්තය, සංච
 book:'WhatsApp හරහා වෙන්කරන්න',rate:'ඇගයීම් කරන්න',feat:'විශේෂිත',none:'ඔබේ සෙවුමට ගැළපෙන සංචාර නැත.',veh_btn:'වාහන විස්තර බලන්න',
 s1:'1. සංචාරයක් තෝරන්න',s1d:'දේශීය රියදුරු-මාර්ගෝපදේශකයින් නියම කළ මිල සහ ඇතුළත් දේ බලන්න.',s2:'2. අපගේ කණ්ඩායමට පණිවිඩ කරන්න',s2d:'WhatsApp බොත්තම ඔබන්න; දිනය, ගමන ආරම්භ ස්ථානය සහ ගෙවීම අපි තහවුරු කරමු.',s3:'3. ගමන රසවිඳින්න',s3d:'සත්‍යාපිත රියදුරු-මාර්ගෝපදේශකයා ඔබව හමුවේ.',
 f_name:'රියදුරු / සමාගමේ නම *',f_title:'සංචාරයේ නම *',f_dest:'ගමනාන්තය *',f_price:'දෛනික / පැකේජ මිල (USD) *',f_dur:'සංචාරයේ කාලය *',f_photos:'ඡායාරූප (අවම 1, උපරිම 3) *',f_desc:'විස්තර / ගමන් සැලැස්ම *',
-f_vtype:'වාහන වර්ගය (උදා: KDH Van, Jeep) *',f_vseat:'ආසන ධාරිතාව *',f_vac:'වායු සමීකරණය (A/C) ඇත',
+v_section:'වාහන විස්තර',f_vmodel:'වාහන වර්ගය හා මාදිලිය *',f_vseat:'ආසන ධාරිතාව *',f_vac:'වායු සමීකරණය (A/C) ඇත',
+f_vlayout:'ආසන සැලසුම *',f_vluggage:'ලගේජ් ධාරිතාව *',
+f_ins_ac:'A/C තත්ත්වය',f_ins_safety:'ආරක්ෂක උපාංග',f_ins_maint:'නඩත්තු තත්ත්වය',
+ins_ok:'හොඳයි',ins_warn:'අවධානය අවශ්‍යයි',ins_na:'අදාළ නොවේ',
+f_vphotos:'වාහන ඡායාරූප (උපරිම 6) *',
 f_lic:'රියදුරු බලපත්‍ර / ජා.හැ.අ. අංකය (පෞද්ගලික) *',f_idp:'බලපත්‍රයේ / ජා.හැ.අ. ඡායාරූපය උඩුගත කරන්න *',f_wa:'ඔබේ WhatsApp අංකය (පෞද්ගලික) *',
 terms:'මම Open Tours Ceylon රියදුරු නියමයන්ට එකඟ වෙමි (තහවුරු කළ වෙන්කිරීම් මත 10% වේදිකා කොමිස්, වෘත්තීය හැසිරීම, සහ සංචාරක තෘප්තිමත් භාවයට මුල් තැන දීම) *',
 submit:'යවන්න',cancel:'අවලංගු කරන්න',priv:'ඔබේ දුරකථන අංකය පරිපාලකයාට පමණි; සංචාරකයින්ට කිසිවිටෙක නොපෙන්වයි.',
-p_name:'උදා: නිමල් ටුවර්ස්',p_title:'උදා: මහනුවර සංස්කෘතික සංචාරය',p_dest:'උදා: මහනුවර',p_dur:'උදා: එක් දිනය, පැය 8',p_desc:'මාර්ගය, නවතින ස්ථාන, ඇතුළත් දේ',p_lic:'උදා: B1234567',p_wa:'+94 77 123 4567',p_vtype:'උදා: Toyota KDH Van',
+p_name:'උදා: නිමල් ටුවර්ස්',p_title:'උදා: මහනුවර සංස්කෘතික සංචාරය',p_dest:'උදා: මහනුවර',p_dur:'උදා: එක් දිනය, පැය 8',p_desc:'මාර්ගය, නවතින ස්ථාන, ඇතුළත් දේ',p_lic:'උදා: B1234567',p_wa:'+94 77 123 4567',
+p_vmodel:'උදා: Toyota KDH High Roof',p_vlayout:'උදා: ලිහිල් ආසන, පේළි 3',p_vluggage:'උදා: ලොකු බෑග් 4 + අත් බෑග් 3',
 rv_title:'ඇගයීම් කරන්න',rv_name:'ඔබේ නම',rv_txt:'ඔබේ අත්දැකීම බෙදාගන්න...',rv_send:'ඇගයීම යවන්න',
 rp_title:'ගැටලුවක් වාර්තා කරන්න',rp_name:'ඔබේ නම',rp_contact:'WhatsApp / ඊමේල්',rp_tour:'සංචාරය / රියදුරාගේ නම',rp_msg:'ගැටලුව විස්තර කරන්න...',rp_send:'WhatsApp හරහා යවන්න',
 au_title:'සංචාරක ගිණුම',au_sub:'විකල්පයි: වෙන්කිරීම් ඉතිහාසය සහ ප්‍රියතම සංචාර සුරැකීමට ඇතුල් වන්න. ගිණුමක් නැතිවත් වෙන්කරගත හැක.',au_hist:'වෙන්කිරීම් ඉතිහාසය',au_fav:'ප්‍රියතම',au_out:'ඉවත් වන්න',
@@ -297,13 +325,13 @@ const VIMG=['https://images.unsplash.com/photo-1600661653561-629509216228?auto=f
 const savedRv=ls.get('rv',{});
 const tours=[
 {id:1,title:'Sigiriya Day Tour',dest:'Sigiriya',operator:'Verified Partner',duration:'1 Day (12 hrs)',dur:'day',price:65,unit:'per person',sponsored:true,photos:IMG,includes:['Private A/C vehicle','English-speaking guide','Village lunch','Water'],desc:'Climb the legendary Lion Rock fortress, admire the ancient frescoes and enjoy a village lunch.',
-  vehicle:{type:'Toyota KDH Van',ac:true,seats:9,photos:[VIMG[0],VIMG[1],VIMG[2]],layout:'3 rows of forward-facing reclining seats, wide aisle access, large windows for sightseeing.',luggage:'Rear compartment fits 4 large suitcases + 4 carry-ons.',inspect:{ac:'ok',safety:'ok',maint:'ok'},inspectedAt:'2026-08-14'},
+  vehicle:{model:'Toyota KDH High Roof',ac:true,seats:9,photos:[VIMG[0],VIMG[1],VIMG[2]],layout:'Reclining Seats, 3-row layout with wide aisle access and large sightseeing windows.',luggage:'4 Large Suitcases + 4 Carry-ons in the rear compartment.',inspect:{ac:'ok',safety:'ok',maint:'ok'},inspectedAt:'2026-08-14'},
   reviews:[{s:5,n:'Anna',x:'Amazing guide!'},{s:5,n:'Mark',x:'Perfect day.'},{s:4,n:'Li',x:'Great value.'}]},
 {id:2,title:'Ella Scenic Trip',dest:'Ella',operator:'Verified Partner',duration:'3 Days / 2 Nights',dur:'multi',price:120,unit:'per day',photos:[IMG[1],IMG[0]],includes:['Driver-guide','Fuel & parking','Tea factory visit','Nine Arches Bridge'],desc:"Wind through the hill country, hike Little Adam's Peak and visit a tea plantation.",
-  vehicle:{type:'Toyota Axio Sedan',ac:true,seats:4,photos:[VIMG[3],VIMG[1]],layout:'Standard 4-seat sedan layout with front and rear bench seating.',luggage:'Trunk fits 2 medium suitcases + 2 backpacks.',inspect:{ac:'ok',safety:'ok',maint:'warn'},inspectedAt:'2026-07-02'},
+  vehicle:{model:'Toyota Axio Sedan',ac:true,seats:4,photos:[VIMG[3],VIMG[1]],layout:'Standard 4-seat sedan, front bucket seats + rear bench.',luggage:'2 Medium Suitcases + 2 Backpacks in the trunk.',inspect:{ac:'ok',safety:'ok',maint:'warn'},inspectedAt:'2026-07-02'},
   reviews:[{s:5,n:'Sara',x:'Stunning views.'},{s:4,n:'Tom',x:'Very friendly driver.'}]},
 {id:3,title:'Mirissa Whale Watching',dest:'Mirissa',operator:'Verified Partner',duration:'Half Day (5 hrs)',dur:'half',price:45,unit:'per person',photos:[IMG[2],IMG[0]],includes:['Boat ticket','Breakfast','Life jacket','Hotel pickup'],desc:"Sail out at sunrise to spot blue whales and dolphins, then relax on Mirissa's golden beach.",
-  vehicle:{type:'Mini Bus (Hotel Transfer)',ac:false,seats:12,photos:[VIMG[2],VIMG[0]],layout:'4 rows of bench seating, open-window ventilation, side entry door.',luggage:'Overhead racks + rear rack for small bags only.',inspect:{ac:'na',safety:'ok',maint:'ok'},inspectedAt:'2026-06-20'},
+  vehicle:{model:'Mitsubishi Rosa Mini Bus',ac:false,seats:12,photos:[VIMG[2],VIMG[0]],layout:'4 rows of bench seating with open-window ventilation and a side entry door.',luggage:'Overhead racks + rear rack, small bags only.',inspect:{ac:'na',safety:'ok',maint:'ok'},inspectedAt:'2026-06-20'},
   reviews:[{s:5,n:'Joy',x:'Saw blue whales!'}]}];
 tours.forEach(x=>{if(savedRv[x.id])x.reviews.push(...savedRv[x.id])});
 let favs=ls.get('favs',[]),user=ls.get('user',null),hist=ls.get('hist',[]),nextId=10;
@@ -370,7 +398,7 @@ function fillFilters(){
 function vehicleBadges(v){
   if(!v)return'';
   return `<div class="flex flex-wrap gap-1.5 mt-2">
-    <span class="vtag"><i class="fa-solid fa-van-shuttle text-amber-400"></i>${esc(v.type)}</span>
+    <span class="vtag"><i class="fa-solid fa-van-shuttle text-amber-400"></i>${esc(v.model)}</span>
     <span class="vtag ${v.ac?'text-emerald-300':'text-slate-400'}"><i class="fa-solid ${v.ac?'fa-snowflake text-emerald-400':'fa-fan'}"></i>${v.ac?t('ac_yes'):t('ac_no')}</span>
     <span class="vtag"><i class="fa-solid fa-chair text-amber-400"></i>${v.seats} ${t('seats')}</span>
   </div>`;
@@ -415,11 +443,14 @@ $('grid').addEventListener('click',e=>{
   if(e.target.closest('[data-book]')&&user){hist.unshift({title:x.title,price:x.price,at:new Date().toLocaleDateString()});ls.set('hist',hist)}});
 
 /* ---------- Vehicle & Inspection modal ---------- */
+let vehTourId=null;
 function vehOpen(x){
   const v=x.vehicle;if(!v)return;
+  vehTourId=x.id;
+  $('vhModel').textContent=v.model;
   $('vhTourName').textContent=x.title;
   $('vhBadges').innerHTML=`
-    <span class="vpill bg-slate-900 border border-slate-700 text-slate-200"><i class="fa-solid fa-van-shuttle mr-1 text-amber-400"></i>${esc(v.type)}</span>
+    <span class="vpill bg-slate-900 border border-slate-700 text-slate-200"><i class="fa-solid fa-van-shuttle mr-1 text-amber-400"></i>${esc(v.model)}</span>
     <span class="vpill ${v.ac?'bg-emerald-500/15 border border-emerald-500/40 text-emerald-300':'bg-slate-900 border border-slate-700 text-slate-400'}"><i class="fa-solid ${v.ac?'fa-snowflake':'fa-fan'} mr-1"></i>${v.ac?t('ac_yes'):t('ac_no')}</span>
     <span class="vpill bg-slate-900 border border-slate-700 text-slate-200"><i class="fa-solid fa-chair mr-1 text-amber-400"></i>${v.seats} ${t('seats')}</span>`;
   $('vhPhotos').innerHTML=v.photos.map((p,k)=>`<button type="button" data-vphoto="${k}" class="rounded-lg overflow-hidden aspect-square border border-slate-700"><img src="${esc(p)}" alt="Vehicle photo ${k+1}" class="w-full h-full object-cover"></button>`).join('');
@@ -435,7 +466,7 @@ function vehOpen(x){
 }
 $('vhPhotos').addEventListener('click',e=>{
   const b=e.target.closest('[data-vphoto]');if(!b)return;
-  const x=tours.find(v=>v.title===$('vhTourName').textContent);if(!x||!x.vehicle)return;
+  const x=tours.find(v=>v.id===vehTourId);if(!x||!x.vehicle)return;
   lbOpen(x.vehicle.photos,+b.dataset.vphoto);
 });
 
@@ -473,12 +504,20 @@ $('out').onclick=()=>{user=null;ls.set('user',null);renderAuth()};
 const readURL=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej();r.readAsDataURL(f)});
 const shrink=(u,max=1280,q=.82)=>new Promise(res=>{const i=new Image();i.onload=()=>{const s=Math.min(1,max/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);c.getContext('2d').drawImage(i,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',q))};i.onerror=()=>res(null);i.src=u});
 const fErr=m=>{$('fErr').textContent=m;$('fErr').classList.remove('hidden')};
+
 let picked=[],pend=false;
 const prev=()=>$('pv').innerHTML=picked.map((p,k)=>`<div class="w-16 h-16 rounded-lg overflow-hidden border-2 ${k?'border-slate-600':'border-amber-400'}"><img src="${esc(p)}" alt="" class="w-full h-full object-cover"></div>`).join('');
 $('fPhotos').addEventListener('change',async()=>{
   $('fErr').classList.add('hidden');const all=[...$('fPhotos').files],fs=all.filter(f=>f.type.startsWith('image/')).slice(0,3);picked=[];prev();
   if(all.length>3)fErr('Max 3 photos. Only the first 3 were kept.');if(!fs.length)return;
   pend=true;try{picked=(await Promise.all(fs.map(async f=>shrink(await readURL(f))))).filter(Boolean)}catch(_){fErr('Could not read photos.')}pend=false;prev()});
+
+let pickedV=[],pendV=false;
+const prevV=()=>$('pvV').innerHTML=pickedV.map((p,k)=>`<div class="w-16 h-16 rounded-lg overflow-hidden border-2 ${k?'border-slate-600':'border-amber-400'}"><img src="${esc(p)}" alt="" class="w-full h-full object-cover"></div>`).join('');
+$('fVPhotos').addEventListener('change',async()=>{
+  $('fErr').classList.add('hidden');const all=[...$('fVPhotos').files],fs=all.filter(f=>f.type.startsWith('image/')).slice(0,6);pickedV=[];prevV();
+  if(all.length>6)fErr('Max 6 vehicle photos. Only the first 6 were kept.');if(!fs.length)return;
+  pendV=true;try{pickedV=(await Promise.all(fs.map(async f=>shrink(await readURL(f))))).filter(Boolean)}catch(_){fErr('Could not read vehicle photos.')}pendV=false;prevV()});
 
 let ocr={s:'idle',x:''},tok=0;
 const norm=s=>String(s).toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/O/g,'0').replace(/[IL]/g,'1');
@@ -494,12 +533,15 @@ $('fId').addEventListener('change',async()=>{
 /* ---------- Submit listing ---------- */
 $('lf').addEventListener('submit',e=>{e.preventDefault();
   const v=id=>$(id).value.trim(),name=v('fName'),title=v('fTitle'),dest=v('fDest'),dur=v('fDur'),desc=v('fDesc'),lic=v('fLic'),w=v('fWa'),price=parseFloat(v('fPrice'));
-  const vtype=v('fVType'),vseat=parseInt($('fVSeat').value,10),vac=$('fVAc').checked;
-  if(!name||!title||!dest||!dur||!desc||!lic||!w||!vtype)return fErr('Please complete all required fields.');
+  const vmodel=v('fVModel'),vseat=parseInt($('fVSeat').value,10),vac=$('fVAc').checked,vlayout=v('fVLayout'),vluggage=v('fVLuggage');
+  const insAc=$('fInsAc').value,insSafety=$('fInsSafety').value,insMaint=$('fInsMaint').value;
+  if(!name||!title||!dest||!dur||!desc||!lic||!w||!vmodel||!vlayout||!vluggage)return fErr('Please complete all required fields.');
   if(!(price>0))return fErr('Please enter a valid rate in USD.');
   if(!(vseat>0))return fErr('Please enter a valid seating capacity.');
-  if(pend)return fErr('Photos are still processing. Please wait.');
+  if(pend)return fErr('Tour photos are still processing. Please wait.');
   if(!picked.length)return fErr('Please upload at least one tour photo (up to 3).');
+  if(pendV)return fErr('Vehicle photos are still processing. Please wait.');
+  if(!pickedV.length)return fErr('Please upload at least one vehicle photo (up to 6).');
   if(!$('fId').files.length)return fErr('Please upload a photo of your Driving License / NIC.');
   if(ocr.s==='scan')return fErr('Your ID photo is still being scanned. Please wait and try again.');
   if(ocr.s!=='done')return fErr('We could not scan your ID photo. Please upload a clearer image.');
@@ -510,10 +552,12 @@ $('lf').addEventListener('submit',e=>{e.preventDefault();
   const kind=/night|days|multi/i.test(dur)&&!/^1 day/i.test(dur)?'multi':/half|\b[1-5]\s*h/i.test(dur)?'half':'day';
   tours.unshift({id:nextId++,title,dest,operator:name,duration:dur,dur:kind,price,unit:'per day / package',photos:picked.slice(),
     includes:parts.length>=2?parts:['Driver-guide','Vehicle','Custom itinerary'],desc:desc.length>160?desc.slice(0,157)+'...':desc,
-    vehicle:{type:vtype,ac:vac,seats:vseat,photos:picked.slice(),layout:'Details to be confirmed by the driver.',luggage:'Details to be confirmed by the driver.',inspect:{ac:vac?'ok':'na',safety:'ok',maint:'ok'},inspectedAt:new Date().toISOString().slice(0,10)},
+    vehicle:{model:vmodel,ac:vac,seats:vseat,photos:pickedV.slice(),layout:vlayout,luggage:vluggage,inspect:{ac:insAc,safety:insSafety,maint:insMaint},inspectedAt:new Date().toISOString().slice(0,10)},
     reviews:[]});
-  const msg=['New Driver Listing Submitted for Approval',`Driver/Company: ${name}`,`Tour: ${title} (${dest})`,`Rate: $${price} USD`,`Duration: ${dur}`,`Vehicle: ${vtype}, ${vac?'A/C':'Non-A/C'}, ${vseat} seats`,`Photos: ${picked.length}`,`Description: ${desc.slice(0,400)}`,`Driving License / NIC (OCR-verified, internal): ${lic}`,`Driver WhatsApp (internal): ${w}`,'Driver Terms & 10% commission: ACCEPTED'].join('\n');
-  $('lf').reset();picked=[];prev();ocr={s:'idle',x:''};tok++;idSt('');close('m-list');fillFilters();render();
+  const msg=['New Driver Listing Submitted for Approval',`Driver/Company: ${name}`,`Tour: ${title} (${dest})`,`Rate: $${price} USD`,`Duration: ${dur}`,
+    `Vehicle: ${vmodel}, ${vac?'A/C':'Non-A/C'}, ${vseat} seats`,`Layout: ${vlayout}`,`Luggage: ${vluggage}`,`Inspection — A/C:${insAc} Safety:${insSafety} Maintenance:${insMaint}`,
+    `Tour Photos: ${picked.length}`,`Vehicle Photos: ${pickedV.length}`,`Description: ${desc.slice(0,400)}`,`Driving License / NIC (OCR-verified, internal): ${lic}`,`Driver WhatsApp (internal): ${w}`,'Driver Terms & 10% commission: ACCEPTED'].join('\n');
+  $('lf').reset();picked=[];prev();pickedV=[];prevV();ocr={s:'idle',x:''};tok++;idSt('');close('m-list');fillFilters();render();
   $('tours').scrollIntoView({behavior:'smooth'});toast(t('ok_list'));window.open(wa(msg),'_blank','noopener')});
 
 /* ---------- Language switcher ---------- */
