@@ -39,11 +39,12 @@ if (process.env.NODE_ENV !== 'production') {
 }
 const path = require('path');
 
-// Frontend ස්ටැටික් ෆයිල්ස් සර්ව් කිරීම සඳහා (.. මඟින් backend ෆෝල්ඩර් එකෙන් එළියට / root එකට යයි)
-app.use(express.static(path.join(__dirname, '../frontend')));
+// Vercel serverless පරිසරයේදී root එකේ ඇති frontend ෆෝල්ඩර් එක ලබා දීම
+const frontendPath = path.join(process.cwd(), 'frontend');
 
-// වෙනත් API රූට්ස් වලට අයිති නැති ඕනෑම රූට් එකක් සඳහා frontend/index.html එක පෙන්වීම
+app.use(express.static(frontendPath));
+
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
+    res.sendFile(path.join(frontendPath, 'index.html'));
 });
 module.exports = app;
