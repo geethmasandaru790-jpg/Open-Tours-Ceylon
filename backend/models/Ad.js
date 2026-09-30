@@ -1,29 +1,21 @@
+// backend/models/Ad.js
 const mongoose = require('mongoose');
 
-const AdSchema = new mongoose.Schema(
-  {
-    ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
-    ownerRole: { type: String, enum: ['driver', 'guide'], required: true },
+const adSchema = new mongoose.Schema({
+  ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  title: { type: String, required: true },
+  destination: { type: String, required: true },
+  duration: { type: String, required: true },
+  description: { type: String, required: true },
+  price: { type: Number, required: true },
+  vehicleModel: String,
+  seatLayoutGrid: { type: mongoose.Schema.Types.Mixed, default: [] },
+  totalSeats: Number,
+  hasAc: Boolean,
+  luggageCapacity: String,
+  photos: [String],
+  status: { type: String, enum: ['pending_approval', 'approved', 'rejected'], default: 'pending_approval' },
+  rejectionReason: String,
+}, { timestamps: true });
 
-    title: { type: String, required: true, trim: true, maxlength: 100 },
-    destination: { type: String, required: true, trim: true, maxlength: 60 },
-    duration: { type: String, required: true, trim: true, maxlength: 40 },
-    description: { type: String, required: true, maxlength: 1000 },
-    price: { type: Number, required: true, min: 1 },
-    photos: { type: [String], default: [] },
-
-    // Set to 'pending_approval' on creation. Only admin routes may move it to
-    // 'approved' or 'rejected' — see routes/admin.js.
-    status: {
-      type: String,
-      enum: ['pending_approval', 'approved', 'rejected'],
-      default: 'pending_approval',
-      index: true,
-    },
-    rejectionReason: { type: String, maxlength: 300 },
-    sponsored: { type: Boolean, default: false },
-  },
-  { timestamps: true }
-);
-
-module.exports = mongoose.model('Ad', AdSchema);
+module.exports = mongoose.model('Ad', adSchema);
