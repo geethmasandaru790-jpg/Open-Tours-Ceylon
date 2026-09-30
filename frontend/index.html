@@ -1,493 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OPEN TOURS CEYLON | Dashboard</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<style>
-  body{background:#0f172a;color:#cbd5e1;font-family:Inter,system-ui,sans-serif}
-  .field{width:100%;background:#0f172a;border:1px solid #334155;border-radius:.6rem;padding:.55rem .8rem;color:#fff;font-size:.9rem;outline:none}
-  .field:focus{border-color:#fbbf24}
-  .card{background:#1e293b;border:1px solid #334155;border-radius:1rem;padding:1.25rem}
-  .btn{padding:.6rem 1.2rem;border-radius:.6rem;font-weight:600;font-size:.9rem}
-  .btn-amber{background:#f59e0b;color:#0f172a}.btn-amber:hover{background:#fbbf24}
-  .btn-outline{border:1px solid #475569;color:#e2e8f0}.btn-outline:hover{border-color:#f59e0b;color:#f59e0b}
-  .btn-green{background:#16a34a;color:#fff}.btn-green:hover{background:#22c55e}
-  .btn-red{background:#dc2626;color:#fff}.btn-red:hover{background:#ef4444}
-  .ov{display:none;position:fixed;inset:0;background:rgba(2,6,23,.85);align-items:center;justify-content:center;padding:1rem;z-index:50}
-  .ov.on{display:flex}
-  .box{background:#1e293b;border:1px solid #334155;border-radius:1rem;padding:1.5rem;width:100%;max-width:32rem;max-height:90vh;overflow-y:auto}
-  .seat{width:2.4rem;height:2.4rem;border-radius:.4rem;display:flex;align-items:center;justify-content:center;font-size:.7rem;cursor:pointer;user-select:none}
-  .seat-seat{background:#334155;border:1px solid #475569}
-  .seat-empty{background:transparent;border:1px dashed #334155}
-  .seat-aisle{background:transparent}
-  .seat-driver{background:#f59e0b;color:#0f172a;font-weight:700}
-  table{width:100%;font-size:.85rem}
-  th{text-align:left;color:#94a3b8;font-weight:600;padding:.5rem;border-bottom:1px solid #334155}
-  td{padding:.5rem;border-bottom:1px solid #1e293b}
-  .tag{padding:.15rem .5rem;border-radius:9999px;font-size:.7rem;font-weight:700}
-</style>
-</head>
-<body class="antialiased">
-
-<header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur border-b border-slate-800">
-  <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-    <span class="font-bold text-white text-lg"><i class="fa-solid fa-compass text-amber-400"></i> OPEN TOURS <span class="text-amber-400">CEYLON</span></span>
-    <div id="navRight" class="flex items-center gap-2"></div>
+<!-- frontend: floating AI chatbot widget — append before </body> in index.html -->
+<button id="chatFab" aria-label="Chat with us" class="fixed bottom-5 right-5 z-[70] w-14 h-14 rounded-full bg-amber-500 hover:bg-amber-400 text-slate-900 shadow-xl shadow-amber-500/30 flex items-center justify-center text-2xl">
+  <i class="fa-solid fa-comment-dots"></i>
+</button>
+<div id="chatPanel" class="fixed bottom-24 right-5 z-[70] hidden w-[92vw] max-w-sm h-[70vh] max-h-[520px] bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+  <div class="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-700">
+    <span class="text-white font-semibold text-sm"><i class="fa-solid fa-robot text-amber-400 mr-2"></i>Open Tours Assistant</span>
+    <button id="chatClose" class="text-slate-400 hover:text-white" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
   </div>
-</header>
-
-<main class="max-w-6xl mx-auto px-4 py-8">
-  <div id="alertBox" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
-  <div id="app"></div>
-</main>
-
-<!-- AUTH MODAL: register / login -->
-<div id="m-auth" class="ov"><div class="box">
-  <div class="flex justify-between items-center mb-4">
-    <h3 class="text-xl font-bold text-white" id="authTitle">Sign In</h3>
-    <button data-close class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-  </div>
-  <div class="flex gap-2 mb-4">
-    <button id="tabLogin" class="btn btn-outline flex-1">Sign In</button>
-    <button id="tabRegister" class="btn btn-outline flex-1">Register</button>
-  </div>
-
-  <form id="loginForm" class="grid gap-3">
-    <input id="loginEmail" type="email" placeholder="Email" class="field" required>
-    <input id="loginPassword" type="password" placeholder="Password" class="field" required>
-    <button class="btn btn-amber">Sign In</button>
+  <div id="chatMsgs" class="flex-1 overflow-y-auto p-3 space-y-2 text-sm"></div>
+  <form id="chatForm" class="flex gap-2 p-3 border-t border-slate-700">
+    <input id="chatInput" class="field flex-1" placeholder="Ask about tours, prices, drivers..." autocomplete="off">
+    <button class="px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold" aria-label="Send"><i class="fa-solid fa-paper-plane"></i></button>
   </form>
-
-  <form id="registerForm" class="hidden grid gap-3">
-    <input id="regName" placeholder="Full name" class="field" required>
-    <input id="regEmail" type="email" placeholder="Email" class="field" required>
-    <input id="regPhone" type="tel" placeholder="Phone (e.g. +94 77 123 4567)" class="field" required>
-    <input id="regPassword" type="password" placeholder="Password" class="field" required minlength="6">
-    <div>
-      <label class="block text-xs text-slate-400 mb-1">I am a...</label>
-      <div class="grid grid-cols-3 gap-2" id="roleSelect">
-        <button type="button" data-role="tourist" class="btn btn-outline role-btn">Tourist</button>
-        <button type="button" data-role="driver" class="btn btn-outline role-btn">Driver</button>
-        <button type="button" data-role="guide" class="btn btn-outline role-btn">Guide</button>
-      </div>
-    </div>
-    <button class="btn btn-amber">Create Account</button>
-  </form>
-</div></div>
-
-<!-- OTP MODAL -->
-<div id="m-otp" class="ov"><div class="box max-w-sm">
-  <div class="flex justify-between items-center mb-4">
-    <h3 class="text-xl font-bold text-white"><i class="fa-solid fa-shield-halved text-amber-400 mr-2"></i>Verify Your Account</h3>
-    <button data-close class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-  </div>
-  <p class="text-sm text-slate-400 mb-4">You must verify your account before posting an ad or vehicle listing. Choose how to receive your code.</p>
-  <div class="flex gap-2 mb-4">
-    <button id="otpSendEmail" class="btn btn-outline flex-1"><i class="fa-solid fa-envelope mr-1"></i>Email</button>
-    <button id="otpSendPhone" class="btn btn-outline flex-1"><i class="fa-solid fa-sms mr-1"></i>SMS</button>
-  </div>
-  <p id="otpHint" class="text-xs text-amber-300 mb-3 hidden"></p>
-  <form id="otpForm" class="grid gap-3">
-    <input id="otpCode" placeholder="6-digit code" class="field" maxlength="6">
-    <button class="btn btn-green">Verify</button>
-  </form>
-</div></div>
-
+</div>
 <script>
-const API_BASE = 'http://localhost:4000/api'; // point this at your running backend
+(function () {
+  const API_BASE = window.OTC_API_BASE || 'http://localhost:4000/api';
+  const sessionId = (() => {
+    let id = sessionStorage.getItem('otc_chat_sid');
+    if (!id) { id = crypto.randomUUID(); sessionStorage.setItem('otc_chat_sid', id); }
+    return id;
+  })();
+  const fab = document.getElementById('chatFab'), panel = document.getElementById('chatPanel'),
+        msgs = document.getElementById('chatMsgs'), form = document.getElementById('chatForm'), input = document.getElementById('chatInput');
 
-const store = {
-  get token() { return localStorage.getItem('otc_token'); },
-  set token(v) { v ? localStorage.setItem('otc_token', v) : localStorage.removeItem('otc_token'); },
-};
-let currentUser = null;
-let pendingAction = null; // callback to retry after OTP verification succeeds
+  fab.onclick = () => panel.classList.toggle('hidden');
+  document.getElementById('chatClose').onclick = () => panel.classList.add('hidden');
 
-async function api(path, { method = 'GET', body, auth = true } = {}) {
-  const headers = { 'Content-Type': 'application/json' };
-  if (auth && store.token) headers.Authorization = `Bearer ${store.token}`;
-  const res = await fetch(`${API_BASE}${path}`, { method, headers, body: body ? JSON.stringify(body) : undefined });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const err = new Error(data.error || `Request failed (${res.status})`);
-    err.code = data.code;
-    err.status = res.status;
-    throw err;
-  }
-  return data;
-}
-
-function showAlert(msg, kind = 'error') {
-  const el = document.getElementById('alertBox');
-  el.textContent = msg;
-  el.className = 'mb-4 p-3 rounded-lg text-sm ' + (kind === 'error' ? 'bg-red-500/15 text-red-300 border border-red-500/30' : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30');
-}
-function clearAlert() { document.getElementById('alertBox').className = 'hidden'; }
-
-function openModal(id) { document.getElementById(id).classList.add('on'); }
-function closeModal(id) { document.getElementById(id).classList.remove('on'); }
-document.addEventListener('click', e => {
-  const c = e.target.closest('[data-close]');
-  if (c) closeModal(c.closest('.ov').id);
-});
-
-/* ---------------- Auth ---------------- */
-document.getElementById('tabLogin').onclick = () => switchTab('login');
-document.getElementById('tabRegister').onclick = () => switchTab('register');
-function switchTab(which) {
-  document.getElementById('loginForm').classList.toggle('hidden', which !== 'login');
-  document.getElementById('registerForm').classList.toggle('hidden', which !== 'register');
-  document.getElementById('authTitle').textContent = which === 'login' ? 'Sign In' : 'Create Your Account';
-}
-let selectedRole = 'tourist';
-document.querySelectorAll('.role-btn').forEach(b => b.onclick = () => {
-  selectedRole = b.dataset.role;
-  document.querySelectorAll('.role-btn').forEach(x => x.classList.remove('btn-amber'));
-  b.classList.add('btn-amber');
-});
-
-document.getElementById('loginForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  clearAlert();
-  try {
-    const data = await api('/auth/login', { auth: false, method: 'POST', body: {
-      email: document.getElementById('loginEmail').value,
-      password: document.getElementById('loginPassword').value,
-    }});
-    store.token = data.token;
-    currentUser = data.user;
-    closeModal('m-auth');
-    renderApp();
-  } catch (err) { showAlert(err.message); }
-});
-
-document.getElementById('registerForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  clearAlert();
-  try {
-    const data = await api('/auth/register', { auth: false, method: 'POST', body: {
-      name: document.getElementById('regName').value,
-      email: document.getElementById('regEmail').value,
-      phone: document.getElementById('regPhone').value,
-      password: document.getElementById('regPassword').value,
-      role: selectedRole,
-    }});
-    store.token = data.token;
-    currentUser = data.user;
-    closeModal('m-auth');
-    showAlert('Account created. Verify your account before posting ads.', 'ok');
-    renderApp();
-  } catch (err) { showAlert(err.message); }
-});
-
-async function loadMe() {
-  if (!store.token) { currentUser = null; return; }
-  try {
-    const data = await api('/auth/me');
-    currentUser = data.user;
-  } catch (_) {
-    store.token = null;
-    currentUser = null;
-  }
-}
-function logout() { store.token = null; currentUser = null; renderApp(); }
-
-/* ---------------- OTP gate ---------------- */
-function requireVerifiedThen(action) {
-  if (!currentUser) { openModal('m-auth'); return; }
-  if (currentUser.isAccountVerified) { action(); return; }
-  pendingAction = action;
-  openModal('m-otp');
-}
-document.getElementById('otpSendEmail').onclick = () => sendOtp('email');
-document.getElementById('otpSendPhone').onclick = () => sendOtp('phone');
-async function sendOtp(channel) {
-  try {
-    const res = await api('/otp/send', { method: 'POST', body: { channel } });
-    const hint = document.getElementById('otpHint');
-    hint.classList.remove('hidden');
-    hint.textContent = res.devMode
-      ? `Dev mode: no ${channel} provider configured — check the backend server console for your code.`
-      : `Code sent via ${channel}.`;
-  } catch (err) { showAlert(err.message); }
-}
-document.getElementById('otpForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  try {
-    await api('/otp/verify', { method: 'POST', body: { code: document.getElementById('otpCode').value } });
-    await loadMe();
-    closeModal('m-otp');
-    showAlert('Account verified!', 'ok');
-    if (pendingAction) { const fn = pendingAction; pendingAction = null; fn(); }
-    renderApp();
-  } catch (err) { showAlert(err.message); }
-});
-
-/* ---------------- Seat layout grid editor ---------------- */
-let seatGrid = [['driver', 'aisle', 'seat-1', 'seat-2'], ['seat-3', 'seat-4', 'seat-5', 'seat-6']];
-function cycleCell(kind) {
-  const order = ['empty', 'seat', 'aisle', 'driver'];
-  const base = kind.startsWith('seat-') ? 'seat' : kind;
-  const idx = order.indexOf(base);
-  return order[(idx + 1) % order.length];
-}
-function renderSeatGrid() {
-  const wrap = document.getElementById('seatGridWrap');
-  if (!wrap) return;
-  let seatCount = 0;
-  wrap.innerHTML = seatGrid.map((row, r) => `<div class="flex gap-1">${row.map((cell, c) => {
-    const isSeat = cell.startsWith('seat');
-    if (isSeat) seatCount++;
-    const cls = cell === 'driver' ? 'seat-driver' : cell === 'aisle' ? 'seat-aisle' : isSeat ? 'seat-seat' : 'seat-empty';
-    const label = cell === 'driver' ? '🚗' : cell === 'aisle' ? '' : isSeat ? (seatCount) : '';
-    return `<div class="seat ${cls}" data-r="${r}" data-c="${c}">${label}</div>`;
-  }).join('')}</div>`).join('');
-  const seatSummary = document.getElementById('seatSummary');
-  if (seatSummary) seatSummary.textContent = `${seatCount} seats mapped`;
-}
-function bindSeatGrid() {
-  const wrap = document.getElementById('seatGridWrap');
-  if (!wrap) return;
-  wrap.addEventListener('click', e => {
-    const cell = e.target.closest('.seat');
-    if (!cell) return;
-    const r = +cell.dataset.r, c = +cell.dataset.c;
-    const current = seatGrid[r][c];
-    const next = cycleCell(current);
-    seatGrid[r][c] = next === 'seat' ? 'seat-x' : next; // placeholder, renumbered on render
-    renderSeatGrid();
-  });
-  document.getElementById('seatAddRow').onclick = () => { seatGrid.push(Array(seatGrid[0]?.length || 4).fill('empty')); renderSeatGrid(); };
-  document.getElementById('seatAddCol').onclick = () => { seatGrid.forEach(row => row.push('empty')); renderSeatGrid(); };
-}
-
-/* ---------------- Views ---------------- */
-function renderApp() {
-  renderNav();
-  const app = document.getElementById('app');
-  if (!currentUser) {
-    app.innerHTML = `
-      <div class="card text-center py-16">
-        <h1 class="text-2xl font-bold text-white mb-2">Welcome to Open Tours Ceylon</h1>
-        <p class="text-slate-400 mb-6">Sign in or create an account to browse tours, list your vehicle, or manage bookings.</p>
-        <button class="btn btn-amber" onclick="openModal('m-auth')">Get Started</button>
-      </div>`;
-    return;
+  function addMsg(role, text) {
+    const row = document.createElement('div');
+    row.className = role === 'user' ? 'text-right' : 'text-left';
+    row.innerHTML = `<span class="inline-block px-3 py-2 rounded-xl ${role === 'user' ? 'bg-amber-500 text-slate-900' : 'bg-slate-700 text-slate-100'}">${String(text).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))}</span>`;
+    msgs.appendChild(row);
+    msgs.scrollTop = msgs.scrollHeight;
   }
 
-  if (currentUser.isMasterAdmin) return renderAdminDashboard();
-  if (currentUser.role === 'driver') return renderDriverDashboard();
-  if (currentUser.role === 'guide') return renderGuideDashboard();
-  return renderTouristDashboard();
-}
-
-function renderNav() {
-  const el = document.getElementById('navRight');
-  if (!currentUser) {
-    el.innerHTML = `<button class="btn btn-amber" onclick="openModal('m-auth')">Sign In</button>`;
-    return;
-  }
-  const verifiedBadge = currentUser.isAccountVerified
-    ? `<span class="tag bg-emerald-500/15 text-emerald-300 border border-emerald-500/40"><i class="fa-solid fa-circle-check mr-1"></i>Verified</span>`
-    : `<span class="tag bg-amber-500/15 text-amber-300 border border-amber-500/40"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Unverified</span>`;
-  el.innerHTML = `
-    <span class="text-sm text-slate-300 hidden sm:inline">${currentUser.name}</span>
-    ${verifiedBadge}
-    <button class="btn btn-outline" onclick="logout()">Sign Out</button>`;
-}
-
-function renderTouristDashboard() {
-  document.getElementById('app').innerHTML = `
-    <div class="card">
-      <h2 class="text-xl font-bold text-white mb-2">Welcome, ${currentUser.name}</h2>
-      <p class="text-slate-400 text-sm">Browse approved tours from <code>/api/ads</code> here (listing UI omitted for brevity — same pattern as the driver/guide dashboards below).</p>
-    </div>`;
-}
-
-function renderDriverDashboard() {
-  const app = document.getElementById('app');
-  app.innerHTML = `
-    <div class="grid gap-6">
-      <div class="card">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-bold text-white">Driver Dashboard</h2>
-          <button id="postAdBtn" class="btn btn-amber"><i class="fa-solid fa-plus mr-1"></i>Post Ad / Add Vehicle</button>
-        </div>
-        ${currentUser.isAccountVerified ? '' : `<p class="text-sm text-amber-300 mb-4"><i class="fa-solid fa-lock mr-1"></i>Verify your account to unlock ad posting.</p>`}
-        <div id="myAds"></div>
-      </div>
-
-      <div class="card">
-        <h3 class="text-lg font-bold text-white mb-3">Vehicle Profile</h3>
-        <form id="vehicleForm" class="grid gap-3 sm:grid-cols-2">
-          <input id="vModel" class="field" placeholder="Vehicle model (e.g. Toyota KDH High Roof)" required>
-          <select id="vType" class="field">
-            <option>KDH Van</option><option>Safari Jeep</option><option>Sedan</option><option>Mini Bus</option>
-          </select>
-          <label class="flex items-center gap-2 text-sm"><input id="vAc" type="checkbox" checked class="accent-amber-500"> Has A/C</label>
-          <input id="vSeats" type="number" min="1" max="60" class="field" placeholder="Total seats" required>
-          <input id="vLuggage" class="field sm:col-span-2" placeholder="Luggage capacity (e.g. 4 suitcases + 3 bags)">
-          <input id="vRate" type="number" min="1" class="field" placeholder="Daily rate (USD)" required>
-          <input id="vLicense" class="field" placeholder="Driving license / NIC number" required>
-
-          <div class="sm:col-span-2">
-            <label class="block text-xs text-slate-400 mb-2">Seat Layout (click a cell to cycle: empty → seat → aisle → driver)</label>
-            <div id="seatGridWrap" class="grid gap-1 mb-2"></div>
-            <div class="flex gap-2 text-xs">
-              <button type="button" id="seatAddRow" class="btn btn-outline">+ Row</button>
-              <button type="button" id="seatAddCol" class="btn btn-outline">+ Column</button>
-              <span id="seatSummary" class="text-slate-400 self-center"></span>
-            </div>
-          </div>
-
-          <button class="btn btn-green sm:col-span-2">Save Vehicle Profile</button>
-        </form>
-      </div>
-    </div>`;
-
-  renderSeatGrid();
-  bindSeatGrid();
-  loadMyAds();
-
-  document.getElementById('postAdBtn').onclick = () => requireVerifiedThen(openAdForm);
-
-  document.getElementById('vehicleForm').addEventListener('submit', async e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    addMsg('user', text);
+    input.value = '';
     try {
-      await api('/drivers/profile', { method: 'PUT', body: {
-        vehicleModel: document.getElementById('vModel').value,
-        vehicleType: document.getElementById('vType').value,
-        hasAc: document.getElementById('vAc').checked,
-        totalSeats: parseInt(document.getElementById('vSeats').value, 10),
-        seatLayoutGrid: seatGrid,
-        luggageCapacity: document.getElementById('vLuggage').value,
-        dailyRate: parseFloat(document.getElementById('vRate').value),
-        licenseNumber: document.getElementById('vLicense').value,
-      }});
-      showAlert('Vehicle profile saved. Pending admin approval.', 'ok');
-    } catch (err) { showAlert(err.message); }
+      const token = localStorage.getItem('otc_token');
+      const res = await fetch(`${API_BASE}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ message: text, sessionId }),
+      });
+      const data = await res.json();
+      addMsg('assistant', data.reply || "Sorry, I couldn't get a response.");
+    } catch (_) {
+      addMsg('assistant', "I'm having trouble connecting right now. Please try again shortly.");
+    }
   });
-}
-
-function renderGuideDashboard() {
-  document.getElementById('app').innerHTML = `
-    <div class="card">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-bold text-white">Guide Dashboard</h2>
-        <button id="postAdBtn" class="btn btn-amber"><i class="fa-solid fa-plus mr-1"></i>Post Ad</button>
-      </div>
-      ${currentUser.isAccountVerified ? '' : `<p class="text-sm text-amber-300 mb-4"><i class="fa-solid fa-lock mr-1"></i>Verify your account to unlock ad posting.</p>`}
-      <div id="myAds"></div>
-    </div>`;
-  loadMyAds();
-  document.getElementById('postAdBtn').onclick = () => requireVerifiedThen(openAdForm);
-}
-
-async function loadMyAds() {
-  const el = document.getElementById('myAds');
-  if (!el) return;
-  try {
-    const { ads } = await api('/ads/mine');
-    el.innerHTML = ads.length ? `<table><thead><tr><th>Title</th><th>Destination</th><th>Price</th><th>Status</th></tr></thead><tbody>${
-      ads.map(a => `<tr><td>${esc(a.title)}</td><td>${esc(a.destination)}</td><td>$${a.price}</td><td>${statusTag(a.status)}</td></tr>`).join('')
-    }</tbody></table>` : `<p class="text-sm text-slate-500">No ads yet.</p>`;
-  } catch (err) { el.innerHTML = `<p class="text-sm text-red-400">${err.message}</p>`; }
-}
-
-function statusTag(status) {
-  const map = {
-    pending_approval: 'bg-amber-500/15 text-amber-300 border-amber-500/40',
-    approved: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40',
-    rejected: 'bg-red-500/15 text-red-300 border-red-500/40',
-  };
-  return `<span class="tag border ${map[status] || ''}">${status.replace('_', ' ')}</span>`;
-}
-
-function openAdForm() {
-  const title = prompt('Ad title (e.g. "Kandy Cultural Day Trip")');
-  if (!title) return;
-  const destination = prompt('Destination (e.g. "Kandy")') || '';
-  const duration = prompt('Duration (e.g. "1 Day, 8 hours")') || '';
-  const description = prompt('Description') || '';
-  const price = parseFloat(prompt('Price (USD)') || '0');
-  if (!destination || !duration || !description || !(price > 0)) return showAlert('All fields are required to post an ad.');
-  api('/ads', { method: 'POST', body: { title, destination, duration, description, price } })
-    .then(() => { showAlert('Ad submitted for approval.', 'ok'); loadMyAds(); })
-    .catch(err => showAlert(err.message));
-}
-
-/* ---------------- Master Admin dashboard ---------------- */
-async function renderAdminDashboard() {
-  const app = document.getElementById('app');
-  app.innerHTML = `
-    <div class="grid gap-6">
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="adminStats"></div>
-      <div class="card">
-        <h3 class="text-lg font-bold text-white mb-3">Pending Ads</h3>
-        <div id="pendingAdsTable"></div>
-      </div>
-      <div class="card">
-        <h3 class="text-lg font-bold text-white mb-3">Users</h3>
-        <div id="usersTable"></div>
-      </div>
-    </div>`;
-  loadAdminStats();
-  loadPendingAds();
-  loadUsers();
-}
-
-async function loadAdminStats() {
-  try {
-    const s = await api('/admin/stats');
-    document.getElementById('adminStats').innerHTML = [
-      ['Total Users', s.totalUsers], ['Pending Ads', s.pendingAds],
-      ['Approved Drivers', s.activeDrivers], ['Approved Guides', s.activeGuides],
-    ].map(([label, val]) => `<div class="card text-center"><p class="text-2xl font-bold text-amber-400">${val}</p><p class="text-xs text-slate-400">${label}</p></div>`).join('');
-  } catch (err) { showAlert(err.message); }
-}
-
-async function loadPendingAds() {
-  const el = document.getElementById('pendingAdsTable');
-  try {
-    const { ads } = await api('/admin/ads?status=pending_approval');
-    el.innerHTML = ads.length ? `<table><thead><tr><th>Title</th><th>Owner</th><th>Price</th><th></th></tr></thead><tbody>${
-      ads.map(a => `<tr><td>${esc(a.title)}</td><td>${esc(a.ownerId?.name || '')} (${esc(a.ownerId?.role || '')})</td><td>$${a.price}</td>
-        <td class="flex gap-2"><button class="btn btn-green" onclick="adminApproveAd('${a._id}')">Approve</button><button class="btn btn-red" onclick="adminRejectAd('${a._id}')">Reject</button></td></tr>`).join('')
-    }</tbody></table>` : `<p class="text-sm text-slate-500">No ads awaiting approval.</p>`;
-  } catch (err) { el.innerHTML = `<p class="text-sm text-red-400">${err.message}</p>`; }
-}
-async function adminApproveAd(id) { await api(`/admin/ads/${id}/approve`, { method: 'PATCH' }); loadPendingAds(); loadAdminStats(); }
-async function adminRejectAd(id) {
-  const reason = prompt('Reason for rejection (optional):') || '';
-  await api(`/admin/ads/${id}/reject`, { method: 'PATCH', body: { reason } });
-  loadPendingAds(); loadAdminStats();
-}
-
-async function loadUsers() {
-  const el = document.getElementById('usersTable');
-  try {
-    const { users } = await api('/admin/users');
-    el.innerHTML = `<table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>${
-      users.map(u => `<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.role)}</td><td>${statusTag(u.status === 'active' ? 'approved' : u.status === 'suspended' ? 'rejected' : 'pending_approval')}</td>
-        <td class="flex gap-2">
-          ${u.status !== 'suspended' ? `<button class="btn btn-red" onclick="adminSuspend('${u._id}')">Suspend</button>` : `<button class="btn btn-green" onclick="adminReactivate('${u._id}')">Reactivate</button>`}
-        </td></tr>`).join('')
-    }</tbody></table>`;
-  } catch (err) { el.innerHTML = `<p class="text-sm text-red-400">${err.message}</p>`; }
-}
-async function adminSuspend(id) { await api(`/admin/users/${id}/suspend`, { method: 'PATCH' }); loadUsers(); }
-async function adminReactivate(id) { await api(`/admin/users/${id}/reactivate`, { method: 'PATCH' }); loadUsers(); }
-
-function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-/* ---------------- Init ---------------- */
-(async function init() {
-  await loadMe();
-  renderApp();
 })();
 </script>
-</body>
-</html>
