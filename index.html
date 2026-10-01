@@ -415,14 +415,19 @@ body{transition:opacity .18s}body.sw{opacity:0}
       <p class="text-xs text-slate-400 mt-1"><span data-i="au_otp_sub"></span> <strong id="otpEmailTarget" class="text-amber-400"></strong></p>
     </div>
 
-    <!-- Email Security Code Notification Card (Interactive entry required, no bypass) -->
+    <!-- Real Gmail SMTP Delivery Status Card -->
     <div class="p-3 my-3 rounded-xl bg-slate-900/90 border border-amber-400/40 text-xs">
-      <div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2 text-slate-300">
-          <i class="fa-solid fa-envelope-open-text text-amber-400 text-base"></i>
-          <span><span data-i="au_otp_demo_tip"></span> <strong id="otpDemoDisplay" class="font-mono text-amber-300 text-sm tracking-widest bg-slate-800 px-2 py-0.5 rounded border border-slate-700 select-all">123456</strong></span>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-amber-400/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-400/30">
+          <i class="fa-solid fa-envelope-circle-check text-base"></i>
         </div>
-        <span class="text-[10px] text-slate-400 shrink-0 flex items-center gap-1"><i class="fa-solid fa-keyboard"></i>Type code below</span>
+        <div class="flex-1 min-w-0">
+          <p class="text-white font-semibold text-xs flex items-center gap-1.5">
+            <span data-i="au_otp_inbox_sent"></span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-mono">Gmail SMTP</span>
+          </p>
+          <p class="text-slate-400 text-[11px] mt-0.5" data-i="au_otp_inbox_hint"></p>
+        </div>
       </div>
     </div>
 
@@ -609,14 +614,19 @@ body{transition:opacity .18s}body.sw{opacity:0}
       <p id="socOtpSub" class="text-xs text-slate-400 mt-0.5">Google sent a 6-digit security code to your device</p>
     </div>
 
-    <!-- Security Code Display Card -->
+    <!-- Real Gmail Dispatch Notice Card -->
     <div class="p-2.5 my-2.5 rounded-xl bg-slate-900/90 border border-blue-500/40 text-xs">
-      <div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2 text-slate-300">
-          <i class="fa-solid fa-shield-halved text-blue-400"></i>
-          <span>Security Code: <strong id="socOtpCodeDisplay" class="font-mono text-white text-sm tracking-wider bg-slate-800 px-2 py-0.5 rounded border border-slate-700 select-all">G-123456</strong></span>
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+          <i class="fa-solid fa-envelope-circle-check text-sm"></i>
         </div>
-        <span class="text-[10px] text-slate-400 shrink-0 flex items-center gap-1"><i class="fa-solid fa-keyboard"></i>Type below</span>
+        <div class="min-w-0 flex-1">
+          <p class="text-white font-semibold text-xs flex items-center gap-1.5">
+            <span id="socOtpSentToLabel">Security code sent to your Gmail</span>
+            <span class="text-[9px] px-1 py-0.2 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 font-mono">Gmail SMTP</span>
+          </p>
+          <p class="text-slate-400 text-[11px] mt-0.5" id="socOtpEmailDisplay">Please check your inbox and enter the 6-digit code below</p>
+        </div>
       </div>
     </div>
 
@@ -680,7 +690,7 @@ au_tab_login:'Sign In',au_tab_signup:'Sign Up',au_welcome:'Welcome Back',au_welc
 au_signup_title:'Create Tourist Account',au_signup_sub:'Join Open Tours Ceylon to save favourites, track bookings, and connect with verified drivers.',au_name_lbl:'Full Name *',au_name_p:'e.g. Alex Morgan',
 au_email_lbl:'Email Address *',au_email_p:'name@example.com',au_pass_lbl:'Password *',au_pass_p:'At least 6 characters',au_conf_pass_lbl:'Confirm Password *',au_conf_pass_p:'Repeat your password',
 au_terms_agree:'I agree to Open Tours Ceylon Privacy Policy and Terms of Service.',au_signup_btn:'Create Account & Send OTP',au_or_social:'or continue with',au_rem:'Remember me',au_forgot_link:'Forgot password?',
-au_otp_title:'Enter Verification Code',au_otp_sub:'A 6-digit verification code was sent to',au_otp_demo_tip:'Security Code received via Email:',au_otp_verify_btn:'Verify & Complete',au_otp_resend:'Resend Code',au_otp_expires:'Code expires in:',au_otp_back:'Back to Sign In',
+au_otp_title:'Enter Verification Code',au_otp_sub:'A 6-digit verification code was sent to your Gmail:',au_otp_inbox_sent:'Verification code sent to your Gmail',au_otp_inbox_hint:'Please check your Gmail inbox (and Spam folder), then enter the 6-digit code below.',au_otp_verify_btn:'Verify & Complete',au_otp_resend:'Resend Code',au_otp_expires:'Code expires in:',au_otp_back:'Back to Sign In',
 au_forgot_title:'Password Recovery',au_forgot_sub:'Enter your registered email address to receive a password reset verification code.',au_forgot_btn:'Send Reset Code',
 au_reset_pass_title:'Set New Password',au_reset_pass_sub:'Enter your new password below to reset your credentials.',au_new_pass_lbl:'New Password *',au_conf_new_pass_lbl:'Confirm New Password *',au_reset_submit_btn:'Update & Save Password',
 au_profile_title:'Tourist Account',au_verified_badge:'Verified Tourist',au_provider_lbl:'Connected via',au_tab_history:'Booking History',au_tab_saved:'Saved Favourites',
@@ -710,7 +720,7 @@ au_tab_login:'ඇතුල් වන්න',au_tab_signup:'ලියාපදි
 au_signup_title:'සංචාරක ගිණුමක් සාදන්න',au_signup_sub:'ප්‍රියතම සංචාර සුරැකීමට සහ සත්‍යාපිත රියදුරන් සම්බන්ධ කරගැනීමට ලියාපදිංචි වන්න.',au_name_lbl:'සම්පූර්ණ නම *',au_name_p:'උදා: කසුන් පෙරේරා',
 au_email_lbl:'ඊමේල් ලිපිනය *',au_email_p:'name@example.com',au_pass_lbl:'මුරපදය *',au_pass_p:'අවම වශයෙන් අකුරු 6ක්',au_conf_pass_lbl:'මුරපදය තහවුරු කරන්න *',au_conf_pass_p:'මුරපදය නැවත ඇතුළත් කරන්න',
 au_terms_agree:'මම Open Tours Ceylon රහස්‍යතා ප්‍රතිපත්තියට සහ සේවා නියමයන්ට එකඟ වෙමි.',au_signup_btn:'ගිණුම සාදා OTP ලබාගන්න',au_or_social:'නැතහොත් මේ හරහා',au_rem:'මාව මතක තබාගන්න',au_forgot_link:'මුරපදය අමතකද?',
-au_otp_title:'තහවුරු කිරීමේ කේතය (OTP)',au_otp_sub:'ඉලක්කම් 6 කේතය මෙම ඊමේල් ලිපිනයට එවන ලදී:',au_otp_demo_tip:'ඊමේල් මඟින් ලැබුණු OTP කේතය:',au_otp_verify_btn:'තහවුරු කර අවසන් කරන්න',au_otp_resend:'නැවත එවන්න',au_otp_expires:'කේතය කල් ඉකුත්වන්නේ:',au_otp_back:'නැවත ඇතුල් වීමට යන්න',
+au_otp_title:'තහවුරු කිරීමේ කේතය (OTP)',au_otp_sub:'ඉලක්කම් 6 කේතය ඔබගේ Gmail වෙත එවන ලදී:',au_otp_inbox_sent:'තහවුරු කිරීමේ කේතය ඔබගේ Gmail වෙත යවන ලදී',au_otp_inbox_hint:'කරුණාකර ඔබගේ ඊමේල් ඉන්බොක්ස් (හෝ ස්පෑම් ෆෝල්ඩරය) පරීක්ෂා කර ලැබුණු ඉලක්කම් 6 කේතය පහතින් ඇතුළත් කරන්න.',au_otp_verify_btn:'තහවුරු කර අවසන් කරන්න',au_otp_resend:'නැවත එවන්න',au_otp_expires:'කේතය කල් ඉකුත්වන්නේ:',au_otp_back:'නැවත ඇතුල් වීමට යන්න',
 au_forgot_title:'මුරපදය නැවත ලබාගැනීම',au_forgot_sub:'මුරපදය නැවත සකසන කේතය ලබාගැනීමට ඔබගේ ඊමේල් ලිපිනය ඇතුළත් කරන්න.',au_forgot_btn:'කේතය එවන්න',
 au_reset_pass_title:'නව මුරපදයක් සකසන්න',au_reset_pass_sub:'ඔබගේ නව මුරපදය පහතින් ඇතුළත් කරන්න.',au_new_pass_lbl:'නව මුරපදය *',au_conf_new_pass_lbl:'නව මුරපදය තහවුරු කරන්න *',au_reset_submit_btn:'නව මුරපදය සුරකින්න',
 au_profile_title:'සංචාරක ගිණුම',au_verified_badge:'සත්‍යාපිත සංචාරකයා',au_provider_lbl:'සම්බන්ධ වී ඇත්තේ',au_tab_history:'වෙන්කිරීම් ඉතිහාසය',au_tab_saved:'ප්‍රියතම සංචාර',
@@ -939,8 +949,39 @@ $('btnGoForgot').onclick=()=>showAuthView('forgot');
 $('btnBackFromForgot').onclick=()=>showAuthView('login');
 $('btnCancelOtp').onclick=()=>showAuthView(pendingAuth&&pendingAuth.type==='signup'?'signup':'login');
 
-// Form Login (Now requires interactive 2FA OTP verification)
-$('formLogin').addEventListener('submit',e=>{
+// Backend API Helpers for Real Gmail SMTP OTP
+async function apiSendOtp(email, purpose){
+  try{
+    const res=await fetch('/api/send-otp',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email,purpose})
+    });
+    const data=await res.json();
+    return data;
+  }catch(err){
+    console.error('Failed to send OTP via backend:',err);
+    return {success:false,message:'Network error connecting to OTP authentication service.'};
+  }
+}
+
+async function apiVerifyOtp(email, code){
+  try{
+    const res=await fetch('/api/verify-otp',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email,code})
+    });
+    const data=await res.json();
+    return data;
+  }catch(err){
+    console.error('Failed to verify OTP via backend:',err);
+    return {success:false,message:'Network error verifying OTP code.'};
+  }
+}
+
+// Form Login (Calls backend /api/send-otp)
+$('formLogin').addEventListener('submit',async e=>{
   e.preventDefault();
   const err=$('loginErr');err.classList.add('hidden');
   const email=$('loginEmail').value.trim().toLowerCase();
@@ -954,15 +995,28 @@ $('formLogin').addEventListener('submit',e=>{
     err.textContent=curLang==='si'?'ඊමේල් ලිපිනය හෝ මුරපදය වැරදිය.':'Invalid email or password.';
     err.classList.remove('hidden');return;
   }
-  // Require 2FA OTP verification code rather than bypassing
-  const code=Math.floor(100000+Math.random()*900000).toString();
-  pendingAuth={type:'login',name:found.name,email:found.email,provider:found.provider||'local',avatar:found.avatar||null,code,expiresAt:Date.now()+120000};
+
+  const submitBtn=$('formLogin').querySelector('button[type="submit"]');
+  const origBtnText=submitBtn.innerHTML;
+  submitBtn.disabled=true;
+  submitBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Sending OTP to Gmail...';
+
+  const sendRes=await apiSendOtp(found.email,'login');
+  submitBtn.disabled=false;
+  submitBtn.innerHTML=origBtnText;
+
+  if(!sendRes.success){
+    err.textContent=sendRes.message||'Failed to dispatch OTP. Please check your network.';
+    err.classList.remove('hidden');return;
+  }
+
+  pendingAuth={type:'login',name:found.name,email:found.email,provider:found.provider||'local',avatar:found.avatar||null,expiresAt:Date.now()+10*60*1000};
   showAuthView('otp');
-  toast((curLang==='si'?'ඇතුල්වීමේ OTP කේතය යවන ලදී: ':'Sign-in verification code sent: ')+code);
+  toast(curLang==='si'?'තහවුරු කිරීමේ කේතය ඔබගේ Gmail වෙත යවන ලදී!':'Verification code dispatched to your Gmail inbox!');
 });
 
-// Form Signup
-$('formSignup').addEventListener('submit',e=>{
+// Form Signup (Calls backend /api/send-otp)
+$('formSignup').addEventListener('submit',async e=>{
   e.preventDefault();
   const err=$('regErr');err.classList.add('hidden');
   const name=$('regName').value.trim();
@@ -995,10 +1049,24 @@ $('formSignup').addEventListener('submit',e=>{
     err.textContent=curLang==='si'?'මෙම ඊමේල් ලිපිනයෙන් දැනටමත් ගිණුමක් ඇත. කරුණාකර ඇතුල් වන්න.':'An account with this email already exists. Please sign in.';
     err.classList.remove('hidden');return;
   }
-  const code=Math.floor(100000+Math.random()*900000).toString();
-  pendingAuth={type:'signup',name,email,password:pass,code,expiresAt:Date.now()+120000};
+
+  const submitBtn=$('formSignup').querySelector('button[type="submit"]');
+  const origBtnText=submitBtn.innerHTML;
+  submitBtn.disabled=true;
+  submitBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Sending OTP to Gmail...';
+
+  const sendRes=await apiSendOtp(email,'signup');
+  submitBtn.disabled=false;
+  submitBtn.innerHTML=origBtnText;
+
+  if(!sendRes.success){
+    err.textContent=sendRes.message||'Failed to dispatch OTP. Please check your network.';
+    err.classList.remove('hidden');return;
+  }
+
+  pendingAuth={type:'signup',name,email,password:pass,expiresAt:Date.now()+10*60*1000};
   showAuthView('otp');
-  toast((curLang==='si'?'තහවුරු කිරීමේ OTP කේතය: ':'Your OTP code is: ')+code);
+  toast(curLang==='si'?'තහවුරු කිරීමේ කේතය ඔබගේ Gmail වෙත යවන ලදී!':'Verification code dispatched to your Gmail inbox!');
 });
 
 // OTP Input Logic
@@ -1046,18 +1114,24 @@ function startOtpCountdown(){
   otpCountdownTimer=setInterval(update,1000);
 }
 
-$('btnResendOtp').onclick=()=>{
+$('btnResendOtp').onclick=async()=>{
   if(!pendingAuth)return;
-  const newCode=Math.floor(100000+Math.random()*900000).toString();
-  pendingAuth.code=newCode;
-  pendingAuth.expiresAt=Date.now()+120000;
-  $('otpDemoDisplay').textContent=newCode;
-  clearOtpInputs();
-  startOtpCountdown();
-  toast((curLang==='si'?'නව OTP කේතය යවන ලදී: ':'New OTP sent: ')+newCode);
+  const resBtn=$('btnResendOtp');
+  resBtn.disabled=true;
+  toast(curLang==='si'?'කේතය නැවත යවමින්...':'Resending code to your Gmail...');
+  const sendRes=await apiSendOtp(pendingAuth.email,pendingAuth.type);
+  if(sendRes.success){
+    pendingAuth.expiresAt=Date.now()+10*60*1000;
+    clearOtpInputs();
+    startOtpCountdown();
+    toast(curLang==='si'?'නව කේතය ඔබගේ Gmail වෙත යවන ලදී!':'New verification code dispatched to your Gmail inbox!');
+  }else{
+    toast(sendRes.message||'Failed to resend code.');
+    resBtn.disabled=false;
+  }
 };
 
-$('btnVerifyOtp').onclick=()=>{
+$('btnVerifyOtp').onclick=async()=>{
   const err=$('otpErr');err.classList.add('hidden');
   const code=otpInputs.map(i=>i.value).join('');
   if(code.length<6){
@@ -1068,10 +1142,21 @@ $('btnVerifyOtp').onclick=()=>{
     err.textContent=curLang==='si'?'කේතය කල් ඉකුත් වී ඇත. නැවත කේතයක් ලබාගන්න.':'Verification code has expired. Please resend code.';
     err.classList.remove('hidden');return;
   }
-  if(code!==pendingAuth.code){
-    err.textContent=curLang==='si'?'කේතය වැරදිය. කරුණාකර නැවත උත්සාහ කරන්න.':'Invalid verification code. Please check and try again.';
+
+  const vBtn=$('btnVerifyOtp');
+  const origText=vBtn.innerHTML;
+  vBtn.disabled=true;
+  vBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Verifying Code...';
+
+  const vRes=await apiVerifyOtp(pendingAuth.email,code);
+  vBtn.disabled=false;
+  vBtn.innerHTML=origText;
+
+  if(!vRes.success){
+    err.textContent=vRes.message||(curLang==='si'?'කේතය වැරදිය. කරුණාකර නැවත උත්සාහ කරන්න.':'Invalid verification code. Please check and try again.');
     err.classList.remove('hidden');return;
   }
+
   if(pendingAuth.type==='login'){
     user={name:pendingAuth.name,email:pendingAuth.email,provider:pendingAuth.provider||'local',verified:true,avatar:pendingAuth.avatar||null};
     ls.set('user',user);
@@ -1094,7 +1179,7 @@ $('btnVerifyOtp').onclick=()=>{
 };
 
 // Form Forgot Password
-$('formForgot').addEventListener('submit',e=>{
+$('formForgot').addEventListener('submit',async e=>{
   e.preventDefault();
   const err=$('forgotErr');err.classList.add('hidden');
   const email=$('forgotEmail').value.trim().toLowerCase();
@@ -1102,10 +1187,24 @@ $('formForgot').addEventListener('submit',e=>{
     err.textContent=curLang==='si'?'කරුණාකර ඊමේල් ලිපිනය ඇතුළත් කරන්න.':'Please enter your email.';
     err.classList.remove('hidden');return;
   }
-  const code=Math.floor(100000+Math.random()*900000).toString();
-  pendingAuth={type:'reset',email,code,expiresAt:Date.now()+120000};
+
+  const submitBtn=$('formForgot').querySelector('button[type="submit"]');
+  const origBtnText=submitBtn.innerHTML;
+  submitBtn.disabled=true;
+  submitBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Sending Code to Gmail...';
+
+  const sendRes=await apiSendOtp(email,'reset');
+  submitBtn.disabled=false;
+  submitBtn.innerHTML=origBtnText;
+
+  if(!sendRes.success){
+    err.textContent=sendRes.message||'Failed to dispatch reset code.';
+    err.classList.remove('hidden');return;
+  }
+
+  pendingAuth={type:'reset',email,expiresAt:Date.now()+10*60*1000};
   showAuthView('otp');
-  toast((curLang==='si'?'මුරපදය නැවත සැකසීමේ කේතය: ':'Password reset code: ')+code);
+  toast(curLang==='si'?'මුරපදය නැවත සැකසීමේ කේතය ඔබගේ Gmail වෙත යවන ලදී!':'Password reset code dispatched to your Gmail inbox!');
 });
 
 // Form Set New Password
@@ -1257,8 +1356,8 @@ $('socBtnBackTo2').onclick=()=>{
   $('socStepPassword').classList.remove('hidden');
 };
 
-// Step 2 Form (Password Entry)
-$('socFormPassword').addEventListener('submit',e=>{
+// Step 2 Form (Password Entry -> Calls backend /api/send-otp to dispatch real Gmail OTP)
+$('socFormPassword').addEventListener('submit',async e=>{
   e.preventDefault();
   const err=$('socPassErr');err.classList.add('hidden');
   const pass=$('socPassInput').value;
@@ -1266,11 +1365,22 @@ $('socFormPassword').addEventListener('submit',e=>{
     err.textContent=curLang==='si'?'මුරපදය අවම වශයෙන් අකුරු 6ක් විය යුතුය.':'Password must be at least 6 characters.';
     err.classList.remove('hidden');return;
   }
-  // Generate random 6-digit OTP security code
-  const code=Math.floor(100000+Math.random()*900000).toString();
-  socState.code=code;
-  const prefix=socState.provider==='google'?'G-':'FB-';
-  $('socOtpCodeDisplay').textContent=prefix+code;
+
+  const btn=$('socBtnPassNext');
+  const origBtnText=btn.innerHTML;
+  btn.disabled=true;
+  btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Sending 2-Step Code to Gmail...';
+
+  const sendRes=await apiSendOtp(socState.account.email,socState.provider);
+  btn.disabled=false;
+  btn.innerHTML=origBtnText;
+
+  if(!sendRes.success){
+    err.textContent=sendRes.message||'Failed to dispatch 2-Step code to Gmail.';
+    err.classList.remove('hidden');return;
+  }
+
+  $('socOtpEmailDisplay').textContent=(curLang==='si'?'කේතය එවන ලද්දේ: ':'Code dispatched to: ')+socState.account.email;
   $('socOtpCodeInput').value='';
   $('socOtpErr').classList.add('hidden');
 
@@ -1278,22 +1388,27 @@ $('socFormPassword').addEventListener('submit',e=>{
   $('socStepOtp').classList.remove('hidden');
   setTimeout(()=>$('socOtpCodeInput').focus(),50);
 
-  toast((curLang==='si'?(socState.provider==='google'?'Google 2-Step OTP: ':'Facebook OTP: '):(socState.provider==='google'?'Google Security Code: G-':'Facebook Security Code: FB-'))+code);
+  toast(curLang==='si'?'ආරක්ෂණ කේතය ඔබගේ Gmail වෙත යවන ලදී!':'Security code sent to your Gmail inbox!');
 });
 
 // Step 3 Resend OTP
-$('socBtnResendOtp').onclick=()=>{
-  const code=Math.floor(100000+Math.random()*900000).toString();
-  socState.code=code;
-  const prefix=socState.provider==='google'?'G-':'FB-';
-  $('socOtpCodeDisplay').textContent=prefix+code;
-  $('socOtpCodeInput').value='';
-  $('socOtpErr').classList.add('hidden');
-  toast((curLang==='si'?'නව කේතය යවන ලදී: ':'New security code: ')+prefix+code);
+$('socBtnResendOtp').onclick=async()=>{
+  const resBtn=$('socBtnResendOtp');
+  resBtn.disabled=true;
+  toast(curLang==='si'?'නැවත යවමින්...':'Resending code to your Gmail...');
+  const sendRes=await apiSendOtp(socState.account.email,socState.provider);
+  resBtn.disabled=false;
+  if(sendRes.success){
+    $('socOtpCodeInput').value='';
+    $('socOtpErr').classList.add('hidden');
+    toast(curLang==='si'?'නව ආරක්ෂණ කේතය ඔබගේ Gmail වෙත යවන ලදී!':'New security code dispatched to your Gmail inbox!');
+  }else{
+    toast(sendRes.message||'Failed to resend code.');
+  }
 };
 
-// Step 3 Form (Interactive OTP Code Entry)
-$('socFormOtp').addEventListener('submit',e=>{
+// Step 3 Form (Interactive OTP Code Entry -> Calls backend /api/verify-otp)
+$('socFormOtp').addEventListener('submit',async e=>{
   e.preventDefault();
   const err=$('socOtpErr');err.classList.add('hidden');
   const inputVal=$('socOtpCodeInput').value.trim().replace(/^(G-|FB-)/i,'').replace(/\s+/g,'');
@@ -1301,8 +1416,18 @@ $('socFormOtp').addEventListener('submit',e=>{
     err.textContent=curLang==='si'?'කරුණාකර ඉලක්කම් 6 කේතය ඇතුළත් කරන්න.':'Please enter the complete 6-digit verification code.';
     err.classList.remove('hidden');return;
   }
-  if(inputVal!==socState.code){
-    err.textContent=curLang==='si'?'කේතය වැරදිය. කරුණාකර නැවත පරීක්ෂා කරන්න.':'Invalid verification code. Please check the code and try again.';
+
+  const vBtn=$('socBtnVerifyFinal');
+  const origText=vBtn.innerHTML;
+  vBtn.disabled=true;
+  vBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Verifying with Server...';
+
+  const vRes=await apiVerifyOtp(socState.account.email,inputVal);
+  vBtn.disabled=false;
+  vBtn.innerHTML=origText;
+
+  if(!vRes.success){
+    err.textContent=vRes.message||(curLang==='si'?'කේතය වැරදිය. කරුණාකර නැවත පරීක්ෂා කරන්න.':'Invalid verification code. Please check your Gmail and try again.');
     err.classList.remove('hidden');return;
   }
 
