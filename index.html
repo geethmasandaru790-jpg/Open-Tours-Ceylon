@@ -415,13 +415,15 @@ body{transition:opacity .18s}body.sw{opacity:0}
       <p class="text-xs text-slate-400 mt-1"><span data-i="au_otp_sub"></span> <strong id="otpEmailTarget" class="text-amber-400"></strong></p>
     </div>
 
-    <!-- Interactive Auto-Fill Demo Notification Banner -->
-    <div id="otpAutoFillBanner" class="p-3 my-3 rounded-xl bg-amber-500/10 border border-amber-400/50 text-amber-200 text-xs flex items-center justify-between cursor-pointer hover:bg-amber-500/20 transition-all">
-      <div class="flex items-center gap-2">
-        <i class="fa-solid fa-envelope-open-text text-amber-400 text-base"></i>
-        <span><span data-i="au_otp_demo_tip"></span> <strong id="otpDemoDisplay" class="font-mono text-white text-sm tracking-widest bg-slate-900/80 px-2 py-0.5 rounded border border-amber-400/40">123456</strong></span>
+    <!-- Email Security Code Notification Card (Interactive entry required, no bypass) -->
+    <div class="p-3 my-3 rounded-xl bg-slate-900/90 border border-amber-400/40 text-xs">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 text-slate-300">
+          <i class="fa-solid fa-envelope-open-text text-amber-400 text-base"></i>
+          <span><span data-i="au_otp_demo_tip"></span> <strong id="otpDemoDisplay" class="font-mono text-amber-300 text-sm tracking-widest bg-slate-800 px-2 py-0.5 rounded border border-slate-700 select-all">123456</strong></span>
+        </div>
+        <span class="text-[10px] text-slate-400 shrink-0 flex items-center gap-1"><i class="fa-solid fa-keyboard"></i>Type code below</span>
       </div>
-      <span class="px-2 py-0.5 rounded bg-amber-400 text-slate-900 font-bold text-[10px] shrink-0"><i class="fa-solid fa-bolt mr-1"></i>Auto-Fill</span>
     </div>
 
     <!-- 6 Input Digits -->
@@ -541,15 +543,101 @@ body{transition:opacity .18s}body.sw{opacity:0}
   </div>
 </div></div>
 
-<!-- SOCIAL AUTH SELECTION DIALOG (Interactive Google / Facebook Auth) -->
+<!-- SOCIAL AUTH DIALOG (Interactive Google / Facebook Auth with Password & 2-Step OTP) -->
 <div id="m-social" class="ov"><div class="box max-w-sm">
   <div class="flex justify-between items-center mb-3">
-    <h3 id="socModalTitle" class="text-lg font-bold text-white flex items-center gap-2"></h3>
+    <h3 id="socModalTitle" class="text-base sm:text-lg font-bold text-white flex items-center gap-2"></h3>
     <button data-close class="w-8 h-8 rounded-full hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
   </div>
-  <p id="socModalSub" class="text-xs text-slate-400 mb-4"></p>
-  <div id="socAccountsList" class="space-y-2 mb-3"></div>
-  <button type="button" data-close class="w-full py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-xs text-slate-300 font-semibold" data-i="cancel"></button>
+
+  <!-- STEP 1: Account Selection -->
+  <div id="socStepAccount">
+    <p id="socModalSub" class="text-xs text-slate-400 mb-4"></p>
+    <div id="socAccountsList" class="space-y-2 mb-3"></div>
+    <div id="socCustomEmailBox" class="hidden mb-3 p-3 rounded-xl bg-slate-900/80 border border-slate-700">
+      <label class="lbl text-[11px]" id="socCustomEmailLbl">Enter Google Email</label>
+      <input type="email" id="socCustomEmailInput" class="field text-xs mb-2" placeholder="user@gmail.com">
+      <button type="button" id="socBtnConfirmCustomEmail" class="w-full py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold text-xs transition-all">Continue with this Account</button>
+    </div>
+    <button type="button" data-close class="w-full py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-xs text-slate-300 font-semibold" data-i="cancel"></button>
+  </div>
+
+  <!-- STEP 2: Password Verification -->
+  <div id="socStepPassword" class="hidden">
+    <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-700/80">
+      <button type="button" id="socBtnBackTo1" class="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
+        <i class="fa-solid fa-arrow-left"></i><span>Change Account</span>
+      </button>
+      <span class="text-[10px] text-amber-400 font-mono flex items-center gap-1"><i class="fa-solid fa-lock"></i>Password Step</span>
+    </div>
+    <div class="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-900/90 border border-slate-700 mb-3">
+      <div id="socPillAvatar" class="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center font-bold text-slate-900 bg-amber-400 text-xs shrink-0"></div>
+      <div class="min-w-0 flex-1">
+        <p id="socPillName" class="text-xs font-bold text-white truncate"></p>
+        <p id="socPillEmail" class="text-[11px] text-slate-400 truncate"></p>
+      </div>
+    </div>
+    <form id="socFormPassword" novalidate>
+      <div class="mb-3">
+        <label class="lbl text-xs text-slate-300" id="socPassLbl">Enter account password</label>
+        <div class="relative">
+          <input id="socPassInput" type="password" class="field pr-10 text-xs" placeholder="Enter password" required autocomplete="current-password">
+          <button type="button" class="toggle-pass absolute right-3 top-2.5 text-slate-400 hover:text-amber-400" data-target="socPassInput" aria-label="Toggle password"><i class="fa-regular fa-eye"></i></button>
+        </div>
+        <p class="text-[11px] text-slate-400 mt-1.5">Demo hint: enter <span class="text-amber-300 font-mono">password123</span> or any 6+ char password</p>
+      </div>
+      <p id="socPassErr" class="hidden text-xs text-red-400 mb-3 p-2 rounded-lg bg-red-950/40 border border-red-500/30"></p>
+      <button type="submit" id="socBtnPassNext" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold text-xs transition-all flex items-center justify-center gap-1.5">
+        <span>Continue to 2-Step Verification</span><i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </form>
+  </div>
+
+  <!-- STEP 3: Interactive 2-Step OTP Code Verification -->
+  <div id="socStepOtp" class="hidden">
+    <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-700/80">
+      <button type="button" id="socBtnBackTo2" class="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
+        <i class="fa-solid fa-arrow-left"></i><span>Back</span>
+      </button>
+      <span class="text-[10px] text-emerald-400 font-mono flex items-center gap-1"><i class="fa-solid fa-shield-halved"></i>2-Step Verification</span>
+    </div>
+    <div class="text-center mb-3">
+      <div class="w-10 h-10 mx-auto rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg mb-1.5">
+        <i class="fa-solid fa-mobile-screen-button"></i>
+      </div>
+      <h4 id="socOtpHeading" class="font-bold text-white text-sm">Google 2-Step Verification</h4>
+      <p id="socOtpSub" class="text-xs text-slate-400 mt-0.5">Google sent a 6-digit security code to your device</p>
+    </div>
+
+    <!-- Security Code Display Card -->
+    <div class="p-2.5 my-2.5 rounded-xl bg-slate-900/90 border border-blue-500/40 text-xs">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 text-slate-300">
+          <i class="fa-solid fa-shield-halved text-blue-400"></i>
+          <span>Security Code: <strong id="socOtpCodeDisplay" class="font-mono text-white text-sm tracking-wider bg-slate-800 px-2 py-0.5 rounded border border-slate-700 select-all">G-123456</strong></span>
+        </div>
+        <span class="text-[10px] text-slate-400 shrink-0 flex items-center gap-1"><i class="fa-solid fa-keyboard"></i>Type below</span>
+      </div>
+    </div>
+
+    <!-- Interactive Code Entry Form -->
+    <form id="socFormOtp" novalidate>
+      <div class="mb-3">
+        <div class="flex justify-between items-center mb-1">
+          <label class="lbl text-xs text-slate-300" id="socCodeLbl">Enter 6-digit code</label>
+          <button type="button" id="socBtnResendOtp" class="text-blue-400 hover:underline text-[11px] font-medium">Resend code</button>
+        </div>
+        <div class="relative">
+          <span id="socOtpPrefixText" class="absolute left-3 top-2.5 text-slate-400 font-mono text-sm font-semibold select-none">G-</span>
+          <input id="socOtpCodeInput" type="text" maxlength="6" inputmode="numeric" class="field pl-9 font-mono tracking-widest text-white text-sm" placeholder="123456" autocomplete="one-time-code" required>
+        </div>
+      </div>
+      <p id="socOtpErr" class="hidden text-xs text-red-400 mb-3 p-2 rounded-lg bg-red-950/40 border border-red-500/30"></p>
+      <button type="submit" id="socBtnVerifyFinal" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-all flex items-center justify-center gap-1.5 shadow-lg">
+        <i class="fa-solid fa-circle-check"></i><span id="socBtnVerifyText">Verify & Complete Sign-In</span>
+      </button>
+    </form>
+  </div>
 </div></div>
 
 <!-- LIGHTBOX -->
@@ -592,7 +680,7 @@ au_tab_login:'Sign In',au_tab_signup:'Sign Up',au_welcome:'Welcome Back',au_welc
 au_signup_title:'Create Tourist Account',au_signup_sub:'Join Open Tours Ceylon to save favourites, track bookings, and connect with verified drivers.',au_name_lbl:'Full Name *',au_name_p:'e.g. Alex Morgan',
 au_email_lbl:'Email Address *',au_email_p:'name@example.com',au_pass_lbl:'Password *',au_pass_p:'At least 6 characters',au_conf_pass_lbl:'Confirm Password *',au_conf_pass_p:'Repeat your password',
 au_terms_agree:'I agree to Open Tours Ceylon Privacy Policy and Terms of Service.',au_signup_btn:'Create Account & Send OTP',au_or_social:'or continue with',au_rem:'Remember me',au_forgot_link:'Forgot password?',
-au_otp_title:'Enter Verification Code',au_otp_sub:'A 6-digit verification code was sent to',au_otp_demo_tip:'Live OTP Code (Tap to auto-fill):',au_otp_verify_btn:'Verify & Complete',au_otp_resend:'Resend Code',au_otp_expires:'Code expires in:',au_otp_back:'Back to Sign In',
+au_otp_title:'Enter Verification Code',au_otp_sub:'A 6-digit verification code was sent to',au_otp_demo_tip:'Security Code received via Email:',au_otp_verify_btn:'Verify & Complete',au_otp_resend:'Resend Code',au_otp_expires:'Code expires in:',au_otp_back:'Back to Sign In',
 au_forgot_title:'Password Recovery',au_forgot_sub:'Enter your registered email address to receive a password reset verification code.',au_forgot_btn:'Send Reset Code',
 au_reset_pass_title:'Set New Password',au_reset_pass_sub:'Enter your new password below to reset your credentials.',au_new_pass_lbl:'New Password *',au_conf_new_pass_lbl:'Confirm New Password *',au_reset_submit_btn:'Update & Save Password',
 au_profile_title:'Tourist Account',au_verified_badge:'Verified Tourist',au_provider_lbl:'Connected via',au_tab_history:'Booking History',au_tab_saved:'Saved Favourites',
@@ -622,7 +710,7 @@ au_tab_login:'ඇතුල් වන්න',au_tab_signup:'ලියාපදි
 au_signup_title:'සංචාරක ගිණුමක් සාදන්න',au_signup_sub:'ප්‍රියතම සංචාර සුරැකීමට සහ සත්‍යාපිත රියදුරන් සම්බන්ධ කරගැනීමට ලියාපදිංචි වන්න.',au_name_lbl:'සම්පූර්ණ නම *',au_name_p:'උදා: කසුන් පෙරේරා',
 au_email_lbl:'ඊමේල් ලිපිනය *',au_email_p:'name@example.com',au_pass_lbl:'මුරපදය *',au_pass_p:'අවම වශයෙන් අකුරු 6ක්',au_conf_pass_lbl:'මුරපදය තහවුරු කරන්න *',au_conf_pass_p:'මුරපදය නැවත ඇතුළත් කරන්න',
 au_terms_agree:'මම Open Tours Ceylon රහස්‍යතා ප්‍රතිපත්තියට සහ සේවා නියමයන්ට එකඟ වෙමි.',au_signup_btn:'ගිණුම සාදා OTP ලබාගන්න',au_or_social:'නැතහොත් මේ හරහා',au_rem:'මාව මතක තබාගන්න',au_forgot_link:'මුරපදය අමතකද?',
-au_otp_title:'තහවුරු කිරීමේ කේතය (OTP)',au_otp_sub:'ඉලක්කම් 6 කේතය මෙම ඊමේල් ලිපිනයට එවන ලදී:',au_otp_demo_tip:'ආදර්ශන OTP කේතය (ස්වයංක්‍රීයව පිරවීමට ඔබන්න):',au_otp_verify_btn:'තහවුරු කර අවසන් කරන්න',au_otp_resend:'නැවත එවන්න',au_otp_expires:'කේතය කල් ඉකුත්වන්නේ:',au_otp_back:'නැවත ඇතුල් වීමට යන්න',
+au_otp_title:'තහවුරු කිරීමේ කේතය (OTP)',au_otp_sub:'ඉලක්කම් 6 කේතය මෙම ඊමේල් ලිපිනයට එවන ලදී:',au_otp_demo_tip:'ඊමේල් මඟින් ලැබුණු OTP කේතය:',au_otp_verify_btn:'තහවුරු කර අවසන් කරන්න',au_otp_resend:'නැවත එවන්න',au_otp_expires:'කේතය කල් ඉකුත්වන්නේ:',au_otp_back:'නැවත ඇතුල් වීමට යන්න',
 au_forgot_title:'මුරපදය නැවත ලබාගැනීම',au_forgot_sub:'මුරපදය නැවත සකසන කේතය ලබාගැනීමට ඔබගේ ඊමේල් ලිපිනය ඇතුළත් කරන්න.',au_forgot_btn:'කේතය එවන්න',
 au_reset_pass_title:'නව මුරපදයක් සකසන්න',au_reset_pass_sub:'ඔබගේ නව මුරපදය පහතින් ඇතුළත් කරන්න.',au_new_pass_lbl:'නව මුරපදය *',au_conf_new_pass_lbl:'නව මුරපදය තහවුරු කරන්න *',au_reset_submit_btn:'නව මුරපදය සුරකින්න',
 au_profile_title:'සංචාරක ගිණුම',au_verified_badge:'සත්‍යාපිත සංචාරකයා',au_provider_lbl:'සම්බන්ධ වී ඇත්තේ',au_tab_history:'වෙන්කිරීම් ඉතිහාසය',au_tab_saved:'ප්‍රියතම සංචාර',
@@ -851,7 +939,7 @@ $('btnGoForgot').onclick=()=>showAuthView('forgot');
 $('btnBackFromForgot').onclick=()=>showAuthView('login');
 $('btnCancelOtp').onclick=()=>showAuthView(pendingAuth&&pendingAuth.type==='signup'?'signup':'login');
 
-// Form Login
+// Form Login (Now requires interactive 2FA OTP verification)
 $('formLogin').addEventListener('submit',e=>{
   e.preventDefault();
   const err=$('loginErr');err.classList.add('hidden');
@@ -866,11 +954,11 @@ $('formLogin').addEventListener('submit',e=>{
     err.textContent=curLang==='si'?'ඊමේල් ලිපිනය හෝ මුරපදය වැරදිය.':'Invalid email or password.';
     err.classList.remove('hidden');return;
   }
-  user={name:found.name,email:found.email,provider:found.provider||'local',verified:!!found.verified,avatar:found.avatar||null};
-  ls.set('user',user);
-  updateNavUser();
-  toast((curLang==='si'?'සාදරයෙන් පිළිගනිමු ':'Welcome back, ')+user.name+'!');
-  showAuthView('profile');
+  // Require 2FA OTP verification code rather than bypassing
+  const code=Math.floor(100000+Math.random()*900000).toString();
+  pendingAuth={type:'login',name:found.name,email:found.email,provider:found.provider||'local',avatar:found.avatar||null,code,expiresAt:Date.now()+120000};
+  showAuthView('otp');
+  toast((curLang==='si'?'ඇතුල්වීමේ OTP කේතය යවන ලදී: ':'Sign-in verification code sent: ')+code);
 });
 
 // Form Signup
@@ -940,12 +1028,6 @@ otpInputs.forEach((inp,idx)=>{
   });
 });
 
-$('otpAutoFillBanner').onclick=()=>{
-  if(!pendingAuth)return;
-  pendingAuth.code.split('').forEach((ch,i)=>{if(otpInputs[i])otpInputs[i].value=ch});
-  toast(curLang==='si'?'OTP කේතය පුරවන ලදී!':'OTP Code auto-filled!');
-};
-
 function startOtpCountdown(){
   clearInterval(otpCountdownTimer);
   const disp=$('otpTimerDisplay'),resBtn=$('btnResendOtp');
@@ -990,7 +1072,14 @@ $('btnVerifyOtp').onclick=()=>{
     err.textContent=curLang==='si'?'කේතය වැරදිය. කරුණාකර නැවත උත්සාහ කරන්න.':'Invalid verification code. Please check and try again.';
     err.classList.remove('hidden');return;
   }
-  if(pendingAuth.type==='signup'){
+  if(pendingAuth.type==='login'){
+    user={name:pendingAuth.name,email:pendingAuth.email,provider:pendingAuth.provider||'local',verified:true,avatar:pendingAuth.avatar||null};
+    ls.set('user',user);
+    updateNavUser();
+    pendingAuth=null;
+    toast((curLang==='si'?'සාදරයෙන් පිළිගනිමු ':'Welcome back, ')+user.name+'!');
+    showAuthView('profile');
+  }else if(pendingAuth.type==='signup'){
     const newUser={name:pendingAuth.name,email:pendingAuth.email,password:pendingAuth.password,provider:'local',verified:true,avatar:null,createdAt:new Date().toISOString()};
     usersDb.push(newUser);ls.set('otc_users',usersDb);
     user={name:newUser.name,email:newUser.email,provider:'local',verified:true,avatar:null};
@@ -1046,30 +1135,58 @@ $('formNewPass').addEventListener('submit',e=>{
   showAuthView('login');
 });
 
-// Social Authentication Dialog & Actions
+// Interactive Social Authentication with Password Check & 2-Step OTP Code
 const SOCIAL_ACCOUNTS={
   google:[
-    {name:'Alex Morgan',email:'alex.morgan@gmail.com',avatar:'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',sub:'Connected Google Account'},
+    {name:'Alex Morgan',email:'alex.morgan@gmail.com',avatar:'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',sub:'Google Account • Verified'},
     {name:'Elena Rossi',email:'elena.traveler@gmail.com',avatar:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',sub:'Tourist • Italy'},
-    {name:'Sign in with Custom Google User',email:'',custom:true}
+    {name:'Use another Google Account',email:'',custom:true}
   ],
   facebook:[
-    {name:'Kasun Perera',email:'kasun.p@facebook.com',avatar:'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=200&q=80',sub:'Facebook Profile'},
-    {name:'Continue as Guest Tourist',email:'tourist.fb@open-tours.lk',avatar:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',sub:'Instant Facebook Auth'}
+    {name:'Kasun Perera',email:'kasun.p@facebook.com',avatar:'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=200&q=80',sub:'Facebook Profile • Active'},
+    {name:'Tourist Traveler',email:'tourist.fb@open-tours.lk',avatar:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',sub:'Facebook User'},
+    {name:'Use another Facebook Account',email:'',custom:true}
   ]
 };
+
+let socState={provider:'google',account:null,code:null};
+
+function resetSocModal(){
+  $('socStepAccount').classList.remove('hidden');
+  $('socStepPassword').classList.add('hidden');
+  $('socStepOtp').classList.add('hidden');
+  $('socPassErr').classList.add('hidden');
+  $('socOtpErr').classList.add('hidden');
+  $('socPassInput').value='';
+  $('socOtpCodeInput').value='';
+  $('socCustomEmailBox').classList.add('hidden');
+  $('socCustomEmailInput').value='';
+}
 
 document.querySelectorAll('[data-social]').forEach(btn=>{
   btn.onclick=()=>{
     const prov=btn.dataset.social;
+    socState.provider=prov;
+    resetSocModal();
     const title=$('socModalTitle'),sub=$('socModalSub'),list=$('socAccountsList');
     if(prov==='google'){
       title.innerHTML='<svg class="w-5 h-5 inline" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.15 0 9.92 0 12s.45 3.85 1.24 5.42l4.04-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg> Google Sign-In';
-      sub.textContent='Choose an account to continue to Open Tours Ceylon';
+      sub.textContent=curLang==='si'?'ඇතුල් වීමට ඔබගේ Google ගිණුම තෝරන්න':'Choose an account to continue to Open Tours Ceylon';
+      $('socPassLbl').textContent=curLang==='si'?'Google මුරපදය ඇතුළත් කරන්න':'Enter your Google password';
+      $('socOtpHeading').textContent='Google 2-Step Verification';
+      $('socOtpSub').textContent=curLang==='si'?'Google මඟින් ඔබගේ දුරකථනයට එවූ ඉලක්කම් 6 කේතය ඇතුළත් කරන්න':'Google sent a 6-digit security code to your registered device';
+      $('socOtpPrefixText').textContent='G-';
+      $('socBtnVerifyFinal').className='w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-all flex items-center justify-center gap-1.5 shadow-lg';
     }else{
-      title.innerHTML='<i class="fa-brands fa-facebook-f text-blue-500"></i> Facebook Sign-In';
-      sub.textContent='Log in with your Facebook credentials';
+      title.innerHTML='<i class="fa-brands fa-facebook-f text-blue-500 text-lg inline"></i> Facebook Sign-In';
+      sub.textContent=curLang==='si'?'Facebook ගිණුම තෝරන්න හෝ ඇතුල් වන්න':'Log in with your Facebook credentials';
+      $('socPassLbl').textContent=curLang==='si'?'Facebook මුරපදය ඇතුළත් කරන්න':'Enter your Facebook password';
+      $('socOtpHeading').textContent=curLang==='si'?'Facebook ආරක්ෂණ කේතය':'Facebook Two-Factor Authentication';
+      $('socOtpSub').textContent=curLang==='si'?'Facebook මඟින් ඔබගේ ගිණුමට එවූ ඉලක්කම් 6 කේතය ඇතුළත් කරන්න':'Enter the 6-digit security confirmation code sent to you';
+      $('socOtpPrefixText').textContent='FB-';
+      $('socBtnVerifyFinal').className='w-full py-2.5 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white font-semibold text-xs transition-all flex items-center justify-center gap-1.5 shadow-lg';
     }
+
     const accs=SOCIAL_ACCOUNTS[prov]||[];
     list.innerHTML=accs.map((a,i)=>`
       <button type="button" data-soc-pick="${i}" class="w-full p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 flex items-center gap-3 text-left transition-all">
@@ -1081,30 +1198,127 @@ document.querySelectorAll('[data-social]').forEach(btn=>{
         <i class="fa-solid fa-chevron-right text-slate-500 text-xs"></i>
       </button>
     `).join('');
+
     list.querySelectorAll('[data-soc-pick]').forEach((itemBtn,i)=>{
       itemBtn.onclick=()=>{
         const chosen=accs[i];
-        let name=chosen.name,email=chosen.email;
         if(chosen.custom){
-          const promptName=prompt(curLang==='si'?'ඔබගේ නම:':'Enter your Name:', 'Tourist');
-          if(!promptName)return;
-          name=promptName;
-          email=name.toLowerCase().replace(/\s+/g,'')+`@${prov}.com`;
+          const box=$('socCustomEmailBox');
+          box.classList.toggle('hidden');
+          $('socCustomEmailLbl').textContent=prov==='google'?'Enter Google Email:':'Enter Facebook Email:';
+          $('socCustomEmailInput').placeholder=prov==='google'?'user@gmail.com':'user@facebook.com';
+          if(!box.classList.contains('hidden'))setTimeout(()=>$('socCustomEmailInput').focus(),50);
+          return;
         }
-        user={name,email,provider:prov,verified:true,avatar:chosen.avatar||null};
-        ls.set('user',user);
-        if(!usersDb.some(u=>u.email===email)){
-          usersDb.push({name,email,provider:prov,verified:true,avatar:user.avatar,createdAt:new Date().toISOString()});
-          ls.set('otc_users',usersDb);
-        }
-        updateNavUser();
-        close('m-social');
-        toast((curLang==='si'?'සාර්ථකව ඇතුල් විය: ':'Signed in with ')+prov.toUpperCase()+` (${name})`);
-        showAuthView('profile');
+        socSelectAccount(chosen.name,chosen.email,chosen.avatar);
       };
     });
+
     open('m-social');
   };
+});
+
+function socSelectAccount(name,email,avatar){
+  socState.account={name,email,avatar};
+  $('socPillName').textContent=name;
+  $('socPillEmail').textContent=email;
+  const avaEl=$('socPillAvatar');
+  if(avatar){
+    avaEl.innerHTML=`<img src="${esc(avatar)}" class="w-full h-full object-cover">`;
+  }else{
+    avaEl.innerHTML='<i class="fa-solid fa-user"></i>';
+  }
+  $('socStepAccount').classList.add('hidden');
+  $('socStepPassword').classList.remove('hidden');
+  $('socPassErr').classList.add('hidden');
+  $('socPassInput').value='';
+  setTimeout(()=>$('socPassInput').focus(),50);
+}
+
+// Custom email submission
+$('socBtnConfirmCustomEmail').onclick=()=>{
+  const val=$('socCustomEmailInput').value.trim();
+  if(!val||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)){
+    toast(curLang==='si'?'වලංගු ඊමේල් ලිපිනයක් ඇතුළත් කරන්න.':'Please enter a valid email address.');
+    return;
+  }
+  const cleanName=val.split('@')[0].replace(/[._-]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  socSelectAccount(cleanName,val,null);
+};
+
+// Back Buttons
+$('socBtnBackTo1').onclick=()=>{
+  $('socStepPassword').classList.add('hidden');
+  $('socStepAccount').classList.remove('hidden');
+};
+
+$('socBtnBackTo2').onclick=()=>{
+  $('socStepOtp').classList.add('hidden');
+  $('socStepPassword').classList.remove('hidden');
+};
+
+// Step 2 Form (Password Entry)
+$('socFormPassword').addEventListener('submit',e=>{
+  e.preventDefault();
+  const err=$('socPassErr');err.classList.add('hidden');
+  const pass=$('socPassInput').value;
+  if(!pass||pass.length<6){
+    err.textContent=curLang==='si'?'මුරපදය අවම වශයෙන් අකුරු 6ක් විය යුතුය.':'Password must be at least 6 characters.';
+    err.classList.remove('hidden');return;
+  }
+  // Generate random 6-digit OTP security code
+  const code=Math.floor(100000+Math.random()*900000).toString();
+  socState.code=code;
+  const prefix=socState.provider==='google'?'G-':'FB-';
+  $('socOtpCodeDisplay').textContent=prefix+code;
+  $('socOtpCodeInput').value='';
+  $('socOtpErr').classList.add('hidden');
+
+  $('socStepPassword').classList.add('hidden');
+  $('socStepOtp').classList.remove('hidden');
+  setTimeout(()=>$('socOtpCodeInput').focus(),50);
+
+  toast((curLang==='si'?(socState.provider==='google'?'Google 2-Step OTP: ':'Facebook OTP: '):(socState.provider==='google'?'Google Security Code: G-':'Facebook Security Code: FB-'))+code);
+});
+
+// Step 3 Resend OTP
+$('socBtnResendOtp').onclick=()=>{
+  const code=Math.floor(100000+Math.random()*900000).toString();
+  socState.code=code;
+  const prefix=socState.provider==='google'?'G-':'FB-';
+  $('socOtpCodeDisplay').textContent=prefix+code;
+  $('socOtpCodeInput').value='';
+  $('socOtpErr').classList.add('hidden');
+  toast((curLang==='si'?'නව කේතය යවන ලදී: ':'New security code: ')+prefix+code);
+};
+
+// Step 3 Form (Interactive OTP Code Entry)
+$('socFormOtp').addEventListener('submit',e=>{
+  e.preventDefault();
+  const err=$('socOtpErr');err.classList.add('hidden');
+  const inputVal=$('socOtpCodeInput').value.trim().replace(/^(G-|FB-)/i,'').replace(/\s+/g,'');
+  if(inputVal.length<6){
+    err.textContent=curLang==='si'?'කරුණාකර ඉලක්කම් 6 කේතය ඇතුළත් කරන්න.':'Please enter the complete 6-digit verification code.';
+    err.classList.remove('hidden');return;
+  }
+  if(inputVal!==socState.code){
+    err.textContent=curLang==='si'?'කේතය වැරදිය. කරුණාකර නැවත පරීක්ෂා කරන්න.':'Invalid verification code. Please check the code and try again.';
+    err.classList.remove('hidden');return;
+  }
+
+  // Interactive Verification Succeeded!
+  const acc=socState.account;
+  const prov=socState.provider;
+  user={name:acc.name,email:acc.email,provider:prov,verified:true,avatar:acc.avatar||null};
+  ls.set('user',user);
+  if(!usersDb.some(u=>u.email.toLowerCase()===acc.email.toLowerCase())){
+    usersDb.push({name:acc.name,email:acc.email,provider:prov,verified:true,avatar:user.avatar,createdAt:new Date().toISOString()});
+    ls.set('otc_users',usersDb);
+  }
+  updateNavUser();
+  close('m-social');
+  toast((curLang==='si'?'සාර්ථකව සත්‍යාපනය කර ඇතුල් විය: ':'Successfully verified & signed in with ')+prov.toUpperCase()+` (${acc.name})`);
+  showAuthView('profile');
 });
 
 // Profile View Data & Actions
