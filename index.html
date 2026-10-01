@@ -11,6 +11,9 @@
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@300;400;500;600&family=Noto+Sans+Sinhala:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- Leaflet CSS & JS for Interactive Google Map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','Noto Sans Sinhala','sans-serif'],display:['Playfair Display','Noto Sans Sinhala','serif']}}}}</script>
 <style>
 body{transition:opacity .18s}body.sw{opacity:0}
@@ -33,6 +36,32 @@ body{transition:opacity .18s}body.sw{opacity:0}
 .heroDot{width:8px;height:8px;border-radius:9999px;background:rgba(255,255,255,.35);transition:background .3s,width .3s}
 .heroDot.on{background:#fbbf24;width:22px}
 .logoMark{filter:drop-shadow(0 1px 1px rgba(0,0,0,.4))}
+
+/* Interactive Google Map & Leaflet Custom Styles */
+.leaflet-container{background:#0f172a !important;font-family:'Inter',sans-serif !important}
+.leaflet-popup-content-wrapper{background:#1e293b !important;color:#f1f5f9 !important;border:1px solid #334155 !important;border-radius:1rem !important;box-shadow:0 20px 25px -5px rgba(0,0,0,0.5),0 8px 10px -6px rgba(0,0,0,0.5) !important;padding:0 !important;overflow:hidden !important}
+.leaflet-popup-content{margin:0 !important;line-height:1.4 !important}
+.leaflet-popup-tip{background:#1e293b !important;border:1px solid #334155 !important}
+.leaflet-bar a{background-color:#1e293b !important;color:#fbbf24 !important;border-bottom:1px solid #334155 !important}
+.leaflet-bar a:hover{background-color:#334155 !important;color:#fff !important}
+.leaflet-control-attribution{background:rgba(15,23,42,0.85) !important;color:#94a3b8 !important;font-size:10px !important;backdrop-filter:blur(4px)}
+.leaflet-control-attribution a{color:#fbbf24 !important}
+.custom-map-marker{background:transparent;border:none}
+@keyframes pinPulse{0%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(251,191,36,.7)}70%{transform:scale(1.02);box-shadow:0 0 0 10px rgba(251,191,36,0)}100%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(251,191,36,0)}}
+.map-pulse{animation:pinPulse 2s infinite}
+@keyframes userRadar{0%{transform:scale(0.9);box-shadow:0 0 0 0 rgba(56,189,248,.8)}70%{transform:scale(1.05);box-shadow:0 0 0 14px rgba(56,189,248,0)}100%{transform:scale(0.9);box-shadow:0 0 0 0 rgba(56,189,248,0)}}
+.user-radar{animation:userRadar 1.8s infinite}
+
+/* OTP 6-box Input */
+.otp-box{width:2.6rem;height:3.1rem;text-align:center;font-size:1.35rem;font-weight:700;border-radius:.65rem;background:#0f172a;border:1px solid #334155;color:#fbbf24;outline:none;transition:all .2s ease}
+.otp-box:focus{border-color:#fbbf24;box-shadow:0 0 0 3px rgba(251,191,36,.2);transform:translateY(-2px)}
+@media(min-width:640px){.otp-box{width:3rem;height:3.4rem;font-size:1.5rem}}
+
+/* Custom scrollbar for map sidebar */
+.custom-scroll::-webkit-scrollbar{width:6px}
+.custom-scroll::-webkit-scrollbar-track{background:#0f172a;border-radius:6px}
+.custom-scroll::-webkit-scrollbar-thumb{background:#334155;border-radius:6px}
+.custom-scroll::-webkit-scrollbar-thumb:hover{background:#fbbf24}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-300 font-sans antialiased">
@@ -59,11 +88,15 @@ body{transition:opacity .18s}body.sw{opacity:0}
   <ul class="hidden lg:flex gap-6 text-sm font-medium">
     <li><a href="#home" data-i="home" class="hover:text-amber-400"></a></li>
     <li><a href="#tours" data-i="tours" class="hover:text-amber-400"></a></li>
+    <li><a href="#map" data-i="map" class="hover:text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-map-location-dot text-amber-400 text-xs"></i><span data-i="map"></span></a></li>
     <li><a href="#how" data-i="how" class="hover:text-amber-400"></a></li>
   </ul>
   <div class="flex items-center gap-1.5 sm:gap-2 text-sm">
     <button id="langBtn" class="px-2.5 py-1.5 rounded-full border border-slate-600 hover:border-amber-400 text-white text-xs sm:text-sm" aria-label="Language">🇱🇰 සිංහල | 🇬🇧 EN</button>
-    <button data-open="m-auth" class="w-9 h-9 rounded-full border border-slate-600 hover:border-amber-400 text-white" aria-label="Account"><i class="fa-regular fa-user"></i></button>
+    <button id="navUserBtn" data-open="m-auth" class="flex items-center gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full border border-slate-600 hover:border-amber-400 text-white transition-all" aria-label="Account">
+      <span id="navUserAvatar" class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs overflow-hidden text-amber-400"><i class="fa-regular fa-user"></i></span>
+      <span id="navUserName" class="hidden sm:inline text-xs font-semibold text-slate-200"></span>
+    </button>
     <button data-open="m-list" class="hidden sm:inline-flex items-center gap-2 border border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-slate-900 font-semibold px-4 py-2 rounded-full"><i class="fa-solid fa-plus"></i><span data-i="list"></span></button>
     <a id="navWa" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white font-semibold px-3 sm:px-4 py-2 rounded-full"><i class="fa-brands fa-whatsapp text-lg"></i><span class="hidden md:inline" data-i="contact"></span></a>
   </div>
@@ -110,6 +143,77 @@ body{transition:opacity .18s}body.sw{opacity:0}
     </div>
     <div id="grid" class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6"></div>
     <p id="none" data-i="none" class="hidden text-center text-slate-400 py-10"></p>
+  </div>
+</section>
+
+<!-- INTERACTIVE GOOGLE MAP SECTION -->
+<section id="map" class="py-14 bg-slate-950/80 border-t border-slate-800 relative">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6">
+    <div class="text-center mb-8">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 mb-3 rounded-full border border-amber-400/40 bg-amber-400/10 text-amber-400 text-xs font-semibold tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping mr-1"></span>
+        <span data-i="map_badge"></span>
+      </span>
+      <h2 data-i="map_title" class="font-display text-3xl sm:text-4xl font-bold text-white"></h2>
+      <p data-i="map_sub" class="mt-2 max-w-2xl mx-auto text-slate-400 text-sm sm:text-base"></p>
+    </div>
+
+    <!-- Filter and Action Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6 bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+      <!-- Category Tabs -->
+      <div class="flex flex-wrap gap-1.5 sm:gap-2" id="mapCatFilters">
+        <button type="button" data-cat="all" class="map-cat-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-500 text-slate-900 transition-all flex items-center gap-1.5">
+          <i class="fa-solid fa-layer-group"></i><span data-i="map_all"></span> <span id="mapCntAll" class="text-[10px] bg-slate-900/20 px-1.5 py-0.5 rounded-full font-bold">19</span>
+        </button>
+        <button type="button" data-cat="drivers" class="map-cat-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-all flex items-center gap-1.5">
+          <i class="fa-solid fa-car text-amber-400"></i><span data-i="map_drivers"></span> <span id="mapCntDrivers" class="text-[10px] bg-slate-700 px-1.5 py-0.5 rounded-full">8</span>
+        </button>
+        <button type="button" data-cat="spots" class="map-cat-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-all flex items-center gap-1.5">
+          <i class="fa-solid fa-camera text-emerald-400"></i><span data-i="map_spots"></span> <span id="mapCntSpots" class="text-[10px] bg-slate-700 px-1.5 py-0.5 rounded-full">7</span>
+        </button>
+        <button type="button" data-cat="travelers" class="map-cat-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-all flex items-center gap-1.5">
+          <i class="fa-solid fa-users text-blue-400"></i><span data-i="map_travelers"></span> <span id="mapCntTravelers" class="text-[10px] bg-slate-700 px-1.5 py-0.5 rounded-full">4</span>
+        </button>
+      </div>
+
+      <!-- Right Controls: Layer Switcher & Locate Me -->
+      <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+        <select id="mapLayerSel" class="bg-slate-800 text-slate-300 text-xs rounded-xl px-3 py-1.5 border border-slate-700 focus:border-amber-400 outline-none">
+          <option value="roadmap">Google Road</option>
+          <option value="satellite">Google Satellite</option>
+          <option value="terrain">Google Terrain</option>
+          <option value="dark">Dark Theme</option>
+        </select>
+        <button id="mapLocateBtn" type="button" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500 hover:text-slate-900 border border-amber-400/40 text-amber-300 text-xs font-semibold flex items-center gap-1.5 transition-all">
+          <i class="fa-solid fa-location-crosshairs"></i><span data-i="map_locate"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Map & Sidebar Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+      <!-- Interactive Google Map Canvas -->
+      <div class="lg:col-span-2 relative rounded-2xl overflow-hidden border border-slate-700/80 shadow-2xl bg-slate-900">
+        <div id="mapCanvas" class="w-full h-[400px] sm:h-[540px] z-10"></div>
+        <!-- Live status legend overlay in map corner -->
+        <div class="absolute bottom-3 left-3 z-[400] glass px-3 py-2 rounded-xl border border-slate-700/60 text-[11px] text-slate-300 flex items-center gap-3 pointer-events-auto">
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span> Driver</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span> Attraction</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-400 inline-block"></span> Traveler</span>
+        </div>
+      </div>
+
+      <!-- Quick Finder & Location Cards Sidebar -->
+      <div class="flex flex-col h-[400px] sm:h-[540px] bg-slate-900/90 rounded-2xl border border-slate-800 p-3 sm:p-4 overflow-hidden">
+        <div class="relative mb-3">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-xs"></i>
+          <input id="mapSearch" type="search" data-p="map_search_p" class="field pl-8 text-xs py-2" placeholder="Filter map by name or town...">
+        </div>
+        <div id="mapList" class="flex-1 overflow-y-auto space-y-2 pr-1 custom-scroll">
+          <!-- Dynamically populated cards with direct click-to-pan -->
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -187,23 +291,265 @@ body{transition:opacity .18s}body.sw{opacity:0}
   </form>
 </div></div>
 
-<!-- AUTH MODAL (optional sign-in) -->
+<!-- AUTH MODAL (Sign In, Sign Up, OTP, Forgot Password, Tourist Profile) -->
 <div id="m-auth" class="ov"><div class="box max-w-md">
-  <div class="flex justify-between items-center mb-3"><h3 class="text-xl font-bold text-white" data-i="au_title"></h3><button data-close class="w-9 h-9 rounded-full hover:bg-slate-700" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
-  <div id="authOut">
-    <p data-i="au_sub" class="text-sm text-slate-400 mb-4"></p>
-    <div class="grid gap-2">
-      <button data-prov="Google" class="py-3 rounded-xl bg-white text-slate-800 font-semibold"><i class="fa-brands fa-google mr-2 text-red-500"></i>Google</button>
-      <button data-prov="Facebook" class="py-3 rounded-xl bg-blue-600 text-white font-semibold"><i class="fa-brands fa-facebook-f mr-2"></i>Facebook</button>
-      <button data-prov="Instagram" class="py-3 rounded-xl bg-gradient-to-r from-pink-500 to-orange-400 text-white font-semibold"><i class="fa-brands fa-instagram mr-2"></i>Instagram</button>
+  <!-- Modal Header -->
+  <div class="flex justify-between items-center mb-3">
+    <h3 id="authModalTitle" class="text-xl font-bold text-white flex items-center gap-2">
+      <i class="fa-solid fa-circle-user text-amber-400"></i>
+      <span id="authTitleText" data-i="au_welcome"></span>
+    </h3>
+    <button data-close class="w-9 h-9 rounded-full hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <!-- View Switcher Tabs (Only shown on Login / Signup views) -->
+  <div id="authTabs" class="flex border-b border-slate-700 mb-4 text-xs font-semibold">
+    <button type="button" id="tabBtnLogin" class="pb-2.5 px-4 text-amber-400 border-b-2 border-amber-400 transition-all flex items-center gap-1.5">
+      <i class="fa-solid fa-arrow-right-to-bracket"></i><span data-i="au_tab_login"></span>
+    </button>
+    <button type="button" id="tabBtnSignup" class="pb-2.5 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent transition-all flex items-center gap-1.5">
+      <i class="fa-solid fa-user-plus"></i><span data-i="au_tab_signup"></span>
+    </button>
+  </div>
+
+  <!-- 1. LOGIN VIEW -->
+  <div id="viewLogin">
+    <p data-i="au_welcome_sub" class="text-xs text-slate-400 mb-4"></p>
+    <form id="formLogin" class="grid gap-3" novalidate>
+      <div>
+        <label class="lbl" data-i="au_email_lbl"></label>
+        <input id="loginEmail" type="email" class="field" data-p="au_email_p" required autocomplete="email">
+      </div>
+      <div>
+        <label class="lbl" data-i="au_pass_lbl"></label>
+        <div class="relative">
+          <input id="loginPass" type="password" class="field pr-10" data-p="au_pass_p" required autocomplete="current-password">
+          <button type="button" class="toggle-pass absolute right-3 top-3 text-slate-400 hover:text-amber-400" data-target="loginPass" aria-label="Toggle password"><i class="fa-regular fa-eye"></i></button>
+        </div>
+      </div>
+      <div class="flex items-center justify-between text-xs pt-1">
+        <label class="flex items-center gap-1.5 text-slate-300 cursor-pointer">
+          <input id="loginRem" type="checkbox" checked class="accent-amber-500 rounded">
+          <span data-i="au_rem"></span>
+        </label>
+        <button type="button" id="btnGoForgot" class="text-amber-400 hover:underline" data-i="au_forgot_link"></button>
+      </div>
+      <p id="loginErr" class="hidden text-xs text-red-400 p-2 rounded-lg bg-red-950/40 border border-red-500/30"></p>
+      <button type="submit" class="w-full mt-2 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold transition-all" data-i="au_login_btn"></button>
+    </form>
+
+    <div class="relative my-4 text-center">
+      <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-700"></div></div>
+      <span class="relative px-3 bg-[#1e293b] text-xs text-slate-400" data-i="au_or_social"></span>
+    </div>
+
+    <!-- Social Buttons -->
+    <div class="grid grid-cols-2 gap-2">
+      <button type="button" data-social="google" class="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-100 text-slate-800 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow">
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.15 0 9.92 0 12s.45 3.85 1.24 5.42l4.04-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>Google
+      </button>
+      <button type="button" data-social="facebook" class="py-2.5 px-3 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow">
+        <i class="fa-brands fa-facebook-f text-sm"></i>Facebook
+      </button>
+    </div>
+    <p class="mt-4 text-[11px] text-slate-400 text-center">Demo account: <span class="text-amber-300 font-mono">alex@example.com</span> / <span class="text-amber-300 font-mono">password123</span></p>
+  </div>
+
+  <!-- 2. SIGN UP VIEW -->
+  <div id="viewSignup" class="hidden">
+    <p data-i="au_signup_sub" class="text-xs text-slate-400 mb-4"></p>
+    <form id="formSignup" class="grid gap-3" novalidate>
+      <div>
+        <label class="lbl" data-i="au_name_lbl"></label>
+        <input id="regName" type="text" class="field" data-p="au_name_p" required autocomplete="name">
+      </div>
+      <div>
+        <label class="lbl" data-i="au_email_lbl"></label>
+        <input id="regEmail" type="email" class="field" data-p="au_email_p" required autocomplete="email">
+      </div>
+      <div>
+        <label class="lbl" data-i="au_pass_lbl"></label>
+        <div class="relative">
+          <input id="regPass" type="password" class="field pr-10" data-p="au_pass_p" required autocomplete="new-password">
+          <button type="button" class="toggle-pass absolute right-3 top-3 text-slate-400 hover:text-amber-400" data-target="regPass" aria-label="Toggle password"><i class="fa-regular fa-eye"></i></button>
+        </div>
+      </div>
+      <div>
+        <label class="lbl" data-i="au_conf_pass_lbl"></label>
+        <div class="relative">
+          <input id="regPassConf" type="password" class="field pr-10" data-p="au_conf_pass_p" required autocomplete="new-password">
+          <button type="button" class="toggle-pass absolute right-3 top-3 text-slate-400 hover:text-amber-400" data-target="regPassConf" aria-label="Toggle password"><i class="fa-regular fa-eye"></i></button>
+        </div>
+      </div>
+      <label class="flex items-start gap-2 text-xs text-slate-300 mt-1 cursor-pointer">
+        <input id="regTerms" type="checkbox" required class="accent-amber-500 mt-0.5">
+        <span data-i="au_terms_agree"></span>
+      </label>
+      <p id="regErr" class="hidden text-xs text-red-400 p-2 rounded-lg bg-red-950/40 border border-red-500/30"></p>
+      <button type="submit" class="w-full mt-2 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold transition-all" data-i="au_signup_btn"></button>
+    </form>
+
+    <div class="relative my-4 text-center">
+      <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-700"></div></div>
+      <span class="relative px-3 bg-[#1e293b] text-xs text-slate-400" data-i="au_or_social"></span>
+    </div>
+
+    <!-- Social Sign Up -->
+    <div class="grid grid-cols-2 gap-2">
+      <button type="button" data-social="google" class="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-100 text-slate-800 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow">
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.15 0 9.92 0 12s.45 3.85 1.24 5.42l4.04-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>Google
+      </button>
+      <button type="button" data-social="facebook" class="py-2.5 px-3 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow">
+        <i class="fa-brands fa-facebook-f text-sm"></i>Facebook
+      </button>
     </div>
   </div>
-  <div id="authIn" class="hidden text-sm">
-    <p id="who" class="text-amber-400 font-semibold mb-3"></p>
-    <h4 data-i="au_hist" class="text-white font-semibold mb-1"></h4><ul id="hist" class="mb-3 text-slate-400 list-disc pl-5"></ul>
-    <h4 data-i="au_fav" class="text-white font-semibold mb-1"></h4><ul id="favs" class="mb-4 text-slate-400 list-disc pl-5"></ul>
-    <button id="out" class="px-4 py-2 rounded-lg border border-slate-600" data-i="au_out"></button>
+
+  <!-- 3. OTP VERIFICATION VIEW -->
+  <div id="viewOtp" class="hidden">
+    <div class="text-center mb-3">
+      <div class="w-12 h-12 mx-auto rounded-full bg-amber-400/20 text-amber-400 flex items-center justify-center text-xl mb-2">
+        <i class="fa-solid fa-shield-cat"></i>
+      </div>
+      <h4 data-i="au_otp_title" class="font-bold text-white text-base"></h4>
+      <p class="text-xs text-slate-400 mt-1"><span data-i="au_otp_sub"></span> <strong id="otpEmailTarget" class="text-amber-400"></strong></p>
+    </div>
+
+    <!-- Interactive Auto-Fill Demo Notification Banner -->
+    <div id="otpAutoFillBanner" class="p-3 my-3 rounded-xl bg-amber-500/10 border border-amber-400/50 text-amber-200 text-xs flex items-center justify-between cursor-pointer hover:bg-amber-500/20 transition-all">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-envelope-open-text text-amber-400 text-base"></i>
+        <span><span data-i="au_otp_demo_tip"></span> <strong id="otpDemoDisplay" class="font-mono text-white text-sm tracking-widest bg-slate-900/80 px-2 py-0.5 rounded border border-amber-400/40">123456</strong></span>
+      </div>
+      <span class="px-2 py-0.5 rounded bg-amber-400 text-slate-900 font-bold text-[10px] shrink-0"><i class="fa-solid fa-bolt mr-1"></i>Auto-Fill</span>
+    </div>
+
+    <!-- 6 Input Digits -->
+    <div class="flex justify-center gap-1.5 sm:gap-2.5 my-4" id="otpInputsContainer">
+      <input type="text" maxlength="1" inputmode="numeric" class="otp-box" data-idx="0">
+      <input type="text" maxlength="1" inputmode="numeric" class="otp-box" data-idx="1">
+      <input type="text" maxlength="1" inputmode="numeric" class="otp-box" data-idx="2">
+      <input type="text" maxlength="1" inputmode="numeric" class="otp-box" data-idx="3">
+      <input type="text" maxlength="1" inputmode="numeric" class="otp-box" data-idx="4">
+      <input type="text" maxlength="1" inputmode="numeric" class="otp-box" data-idx="5">
+    </div>
+
+    <!-- Timer and Resend -->
+    <div class="flex items-center justify-between text-xs text-slate-400 mb-4 px-1">
+      <span><span data-i="au_otp_expires"></span> <strong id="otpTimerDisplay" class="font-mono text-amber-400 font-bold">02:00</strong></span>
+      <button type="button" id="btnResendOtp" class="text-amber-400 hover:underline disabled:text-slate-600 disabled:no-underline font-medium" data-i="au_otp_resend"></button>
+    </div>
+
+    <p id="otpErr" class="hidden text-xs text-red-400 mb-3 p-2 rounded-lg bg-red-950/40 border border-red-500/30"></p>
+    <button type="button" id="btnVerifyOtp" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold transition-all" data-i="au_otp_verify_btn"></button>
+    <button type="button" id="btnCancelOtp" class="w-full mt-2 py-2 rounded-xl text-slate-400 hover:text-white text-xs" data-i="au_otp_back"></button>
   </div>
+
+  <!-- 4. FORGOT PASSWORD VIEW -->
+  <div id="viewForgot" class="hidden">
+    <div class="text-center mb-4">
+      <div class="w-12 h-12 mx-auto rounded-full bg-amber-400/20 text-amber-400 flex items-center justify-center text-xl mb-2">
+        <i class="fa-solid fa-key"></i>
+      </div>
+      <h4 data-i="au_forgot_title" class="font-bold text-white text-base"></h4>
+      <p data-i="au_forgot_sub" class="text-xs text-slate-400 mt-1"></p>
+    </div>
+    <form id="formForgot" class="grid gap-3" novalidate>
+      <div>
+        <label class="lbl" data-i="au_email_lbl"></label>
+        <input id="forgotEmail" type="email" class="field" data-p="au_email_p" required autocomplete="email">
+      </div>
+      <p id="forgotErr" class="hidden text-xs text-red-400 p-2 rounded-lg bg-red-950/40 border border-red-500/30"></p>
+      <button type="submit" class="w-full mt-2 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold transition-all" data-i="au_forgot_btn"></button>
+      <button type="button" id="btnBackFromForgot" class="w-full py-2 rounded-xl text-slate-400 hover:text-white text-xs" data-i="au_otp_back"></button>
+    </form>
+  </div>
+
+  <!-- 5. SET NEW PASSWORD VIEW -->
+  <div id="viewNewPass" class="hidden">
+    <div class="text-center mb-4">
+      <div class="w-12 h-12 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl mb-2">
+        <i class="fa-solid fa-lock-open"></i>
+      </div>
+      <h4 data-i="au_reset_pass_title" class="font-bold text-white text-base"></h4>
+      <p data-i="au_reset_pass_sub" class="text-xs text-slate-400 mt-1"></p>
+    </div>
+    <form id="formNewPass" class="grid gap-3" novalidate>
+      <div>
+        <label class="lbl" data-i="au_new_pass_lbl"></label>
+        <div class="relative">
+          <input id="resetNewPass" type="password" class="field pr-10" data-p="au_pass_p" required autocomplete="new-password">
+          <button type="button" class="toggle-pass absolute right-3 top-3 text-slate-400 hover:text-amber-400" data-target="resetNewPass" aria-label="Toggle password"><i class="fa-regular fa-eye"></i></button>
+        </div>
+      </div>
+      <div>
+        <label class="lbl" data-i="au_conf_new_pass_lbl"></label>
+        <div class="relative">
+          <input id="resetConfPass" type="password" class="field pr-10" data-p="au_conf_pass_p" required autocomplete="new-password">
+          <button type="button" class="toggle-pass absolute right-3 top-3 text-slate-400 hover:text-amber-400" data-target="resetConfPass" aria-label="Toggle password"><i class="fa-regular fa-eye"></i></button>
+        </div>
+      </div>
+      <p id="newPassErr" class="hidden text-xs text-red-400 p-2 rounded-lg bg-red-950/40 border border-red-500/30"></p>
+      <button type="submit" class="w-full mt-2 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold transition-all" data-i="au_reset_submit_btn"></button>
+    </form>
+  </div>
+
+  <!-- 6. LOGGED-IN TOURIST PROFILE VIEW -->
+  <div id="viewProfile" class="hidden">
+    <!-- User Profile Header Card -->
+    <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-900/90 border border-slate-700/80 mb-4">
+      <div id="profAvatar" class="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center font-bold text-slate-900 bg-amber-400 text-lg shrink-0 border-2 border-amber-400/40"></div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2">
+          <h4 id="profName" class="text-white font-bold truncate"></h4>
+          <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-semibold flex items-center gap-1 border border-emerald-500/30 shrink-0">
+            <i class="fa-solid fa-circle-check"></i><span data-i="au_verified_badge"></span>
+          </span>
+        </div>
+        <p id="profEmail" class="text-xs text-slate-400 truncate"></p>
+        <p class="text-[11px] text-amber-400 mt-0.5"><span data-i="au_provider_lbl"></span> <strong id="profProvider" class="font-semibold"></strong></p>
+      </div>
+    </div>
+
+    <!-- History / Favourites Tabs -->
+    <div class="flex border-b border-slate-700 mb-3 text-xs font-semibold">
+      <button type="button" id="tabProfHist" class="pb-2 px-3 text-amber-400 border-b-2 border-amber-400 transition-all flex items-center gap-1.5">
+        <i class="fa-solid fa-clock-rotate-left"></i><span data-i="au_tab_history"></span>
+      </button>
+      <button type="button" id="tabProfFavs" class="pb-2 px-3 text-slate-400 hover:text-slate-200 border-b-2 border-transparent transition-all flex items-center gap-1.5">
+        <i class="fa-solid fa-heart"></i><span data-i="au_tab_saved"></span>
+      </button>
+    </div>
+
+    <!-- Booking History Box -->
+    <div id="profHistBox">
+      <ul id="profHistList" class="space-y-2 max-h-52 overflow-y-auto pr-1 text-xs text-slate-300 custom-scroll"></ul>
+    </div>
+
+    <!-- Favourites Box -->
+    <div id="profFavsBox" class="hidden">
+      <ul id="profFavsList" class="space-y-2 max-h-52 overflow-y-auto pr-1 text-xs text-slate-300 custom-scroll"></ul>
+    </div>
+
+    <!-- Sign Out Footer -->
+    <div class="mt-4 pt-3 border-t border-slate-700 flex justify-between items-center">
+      <span class="text-xs text-slate-400 flex items-center gap-1"><i class="fa-solid fa-shield-halved text-amber-400"></i>Protected Session</span>
+      <button type="button" id="btnSignOut" class="px-4 py-2 rounded-lg border border-slate-600 hover:border-red-400 hover:text-red-400 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-all">
+        <i class="fa-solid fa-right-from-bracket"></i><span data-i="au_signout"></span>
+      </button>
+    </div>
+  </div>
+</div></div>
+
+<!-- SOCIAL AUTH SELECTION DIALOG (Interactive Google / Facebook Auth) -->
+<div id="m-social" class="ov"><div class="box max-w-sm">
+  <div class="flex justify-between items-center mb-3">
+    <h3 id="socModalTitle" class="text-lg font-bold text-white flex items-center gap-2"></h3>
+    <button data-close class="w-8 h-8 rounded-full hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <p id="socModalSub" class="text-xs text-slate-400 mb-4"></p>
+  <div id="socAccountsList" class="space-y-2 mb-3"></div>
+  <button type="button" data-close class="w-full py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-xs text-slate-300 font-semibold" data-i="cancel"></button>
 </div></div>
 
 <!-- LIGHTBOX -->
@@ -235,8 +581,23 @@ submit:'Submit Listing',cancel:'Cancel',priv:'Your phone number is for admin rec
 p_name:'e.g. Nimal Tours',p_title:'e.g. Kandy Cultural Day Trip',p_dest:'e.g. Kandy',p_dur:'e.g. 1 Day, 8 hours',p_desc:'Route, stops, inclusions (comma separated)',p_lic:'e.g. B1234567 / 199512345678',p_wa:'+94 77 123 4567',
 rv_title:'Rate & Review',rv_name:'Your name',rv_txt:'Share your experience...',rv_send:'Submit Review',
 rp_title:'Report a Problem',rp_name:'Your name',rp_contact:'WhatsApp / Email',rp_tour:'Tour / driver name',rp_msg:'Describe the problem...',rp_send:'Send via WhatsApp',
-au_title:'Tourist Account',au_sub:'Optional: sign in to save your booking history and favourite tours. You can book without an account.',au_hist:'Booking history',au_fav:'Favourites',au_out:'Sign out',
-ok_list:'Listing added! Opening WhatsApp to notify our admin...',ok_rv:'Thank you for your review!',reviews:'reviews'},
+au_title:'Tourist Account',au_sub:'Sign in or create an account to manage bookings and favourites.',au_hist:'Booking history',au_fav:'Favourites',au_out:'Sign out',
+ok_list:'Listing added! Opening WhatsApp to notify our admin...',ok_rv:'Thank you for your review!',reviews:'reviews',
+/* Map translations */
+map:'Live Map',map_badge:'Real-Time Explorer',map_title:'Interactive Driver & Location Map',map_sub:'Discover verified driver-guides on duty, iconic Sri Lankan destinations, and fellow tourists near you.',
+map_all:'All Pins',map_drivers:'Driver-Guides',map_spots:'Top Attractions',map_travelers:'Fellow Travelers',map_locate:'Locate Me',map_locating:'Locating...',map_search_p:'Filter map by name or town...',
+map_view_on_map:'View on Map',map_available:'Available Now',map_online:'Active Guide',map_chat_wa:'WhatsApp Guide',map_layer_road:'Google Road',map_layer_sat:'Google Satellite',map_layer_terrain:'Google Terrain',map_layer_dark:'Dark Theme',
+/* Auth translations */
+au_tab_login:'Sign In',au_tab_signup:'Sign Up',au_welcome:'Welcome Back',au_welcome_sub:'Sign in to access your saved tours, bookings, and verified driver chat.',au_login_btn:'Sign In to Account',
+au_signup_title:'Create Tourist Account',au_signup_sub:'Join Open Tours Ceylon to save favourites, track bookings, and connect with verified drivers.',au_name_lbl:'Full Name *',au_name_p:'e.g. Alex Morgan',
+au_email_lbl:'Email Address *',au_email_p:'name@example.com',au_pass_lbl:'Password *',au_pass_p:'At least 6 characters',au_conf_pass_lbl:'Confirm Password *',au_conf_pass_p:'Repeat your password',
+au_terms_agree:'I agree to Open Tours Ceylon Privacy Policy and Terms of Service.',au_signup_btn:'Create Account & Send OTP',au_or_social:'or continue with',au_rem:'Remember me',au_forgot_link:'Forgot password?',
+au_otp_title:'Enter Verification Code',au_otp_sub:'A 6-digit verification code was sent to',au_otp_demo_tip:'Live OTP Code (Tap to auto-fill):',au_otp_verify_btn:'Verify & Complete',au_otp_resend:'Resend Code',au_otp_expires:'Code expires in:',au_otp_back:'Back to Sign In',
+au_forgot_title:'Password Recovery',au_forgot_sub:'Enter your registered email address to receive a password reset verification code.',au_forgot_btn:'Send Reset Code',
+au_reset_pass_title:'Set New Password',au_reset_pass_sub:'Enter your new password below to reset your credentials.',au_new_pass_lbl:'New Password *',au_conf_new_pass_lbl:'Confirm New Password *',au_reset_submit_btn:'Update & Save Password',
+au_profile_title:'Tourist Account',au_verified_badge:'Verified Tourist',au_provider_lbl:'Connected via',au_tab_history:'Booking History',au_tab_saved:'Saved Favourites',
+au_no_history:'No tour bookings yet. Browse tours to book with verified drivers!',au_no_favs:'No saved favourite tours yet. Click the heart icon on any tour to save it.',au_signout:'Sign Out'},
+
 si:{home:'මුල් පිටුව',tours:'සංචාර',how:'ක්‍රියා කරන ආකාරය',list:'සංචාරයක් ඇතුළත් කරන්න',contact:'අප අමතන්න',badge:'සත්‍යාපිත රියදුරු-මාර්ගෝපදේශකයින් පමණි',
 h1:'විශ්වාසදායක ශ්‍රී ලාංකික රියදුරු-මාර්ගෝපදේශකයින් මිනිත්තු කිහිපයකින් වෙන්කරගන්න',sub:'දේශීය විශේෂඥයින් මිල නියම කළ සංචාර බලා, WhatsApp හරහා අපගේ කණ්ඩායම සමඟ සියල්ල තහවුරු කරගන්න.',
 browse:'සංචාර බලන්න',driver:'මම රියදුරෙක් / මාර්ගෝපදේශකයෙක්',gt:'සංචාරක තෘප්තිමත් භාවය සහතිකය',gd:'ඔබේ සංචාරය ගැන සතුටු නැද්ද? අපට දන්වන්න, අපි එය නිවැරදි කරමු.',rep:'ගැටලුවක් වාර්තා කරන්න',
@@ -250,9 +611,23 @@ submit:'යවන්න',cancel:'අවලංගු කරන්න',priv:'ඔ�
 p_name:'උදා: නිමල් ටුවර්ස්',p_title:'උදා: මහනුවර සංස්කෘතික සංචාරය',p_dest:'උදා: මහනුවර',p_dur:'උදා: එක් දිනය, පැය 8',p_desc:'මාර්ගය, නවතින ස්ථාන, ඇතුළත් දේ',p_lic:'උදා: B1234567',p_wa:'+94 77 123 4567',
 rv_title:'ඇගයීම් කරන්න',rv_name:'ඔබේ නම',rv_txt:'ඔබේ අත්දැකීම බෙදාගන්න...',rv_send:'ඇගයීම යවන්න',
 rp_title:'ගැටලුවක් වාර්තා කරන්න',rp_name:'ඔබේ නම',rp_contact:'WhatsApp / ඊමේල්',rp_tour:'සංචාරය / රියදුරාගේ නම',rp_msg:'ගැටලුව විස්තර කරන්න...',rp_send:'WhatsApp හරහා යවන්න',
-au_title:'සංචාරක ගිණුම',au_sub:'විකල්පයි: වෙන්කිරීම් ඉතිහාසය සහ ප්‍රියතම සංචාර සුරැකීමට ඇතුල් වන්න. ගිණුමක් නැතිවත් වෙන්කරගත හැක.',au_hist:'වෙන්කිරීම් ඉතිහාසය',au_fav:'ප්‍රියතම',au_out:'ඉවත් වන්න',
-ok_list:'ඇතුළත් කළා! පරිපාලකයාට දැනුම් දීමට WhatsApp විවෘත වේ...',ok_rv:'ඔබේ ඇගයීමට ස්තූතියි!',reviews:'ඇගයීම්'}};
-let L=ls.get('lang','en');const t=k=>D[L][k]||D.en[k]||k;
+au_title:'සංචාරක ගිණුම',au_sub:'වෙන්කිරීම් සහ ප්‍රියතම සංචාර කළමනාකරණය කිරීමට ඇතුල් වන්න හෝ ගිණුමක් සාදන්න.',au_hist:'වෙන්කිරීම් ඉතිහාසය',au_fav:'ප්‍රියතම',au_out:'ඉවත් වන්න',
+ok_list:'ඇතුළත් කළා! පරිපාලකයාට දැනුම් දීමට WhatsApp විවෘත වේ...',ok_rv:'ඔබේ ඇගයීමට ස්තූතියි!',reviews:'ඇගයීම්',
+/* Map translations */
+map:'සිතියම',map_badge:'සජීවී සිතියම',map_title:'දේශීය මාර්ගෝපදේශකයින් සහ ස්ථාන සිතියම',map_sub:'ශ්‍රී ලංකාව පුරා සිටින සත්‍යාපිත රියදුරු-මාර්ගෝපදේශකයින්, නැරඹුම් ස්ථාන සහ සංචාරකයින් සජීවීව බලන්න.',
+map_all:'සියල්ල',map_drivers:'රියදුරන්',map_spots:'නැරඹුම් ස්ථාන',map_travelers:'සංචාරකයින්',map_locate:'මගේ ස්ථානය',map_locating:'ස්ථානය සොයමින්...',map_search_p:'නම හෝ නගරය අනුව සොයන්න...',
+map_view_on_map:'සිතියමෙන් බලන්න',map_available:'දැනට පවතී',map_online:'සක්‍රීය මාර්ගෝපදේශක',map_chat_wa:'WhatsApp මඟින් කතාකරන්න',map_layer_road:'Google මාර්ග',map_layer_sat:'Google චන්ද්‍රිකා',map_layer_terrain:'Google භූවිෂමතා',map_layer_dark:'රාත්‍රී මාදිලිය',
+/* Auth translations */
+au_tab_login:'ඇතුල් වන්න',au_tab_signup:'ලියාපදිංචි වන්න',au_welcome:'නැවත සාදරයෙන් පිළිගනිමු',au_welcome_sub:'ඔබගේ සුරැකි සංචාර, වෙන්කිරීම් සහ සත්‍යාපිත රියදුරන් සම්බන්ධ කරගැනීමට ඇතුල් වන්න.',au_login_btn:'ගිණුමට ඇතුල් වන්න',
+au_signup_title:'සංචාරක ගිණුමක් සාදන්න',au_signup_sub:'ප්‍රියතම සංචාර සුරැකීමට සහ සත්‍යාපිත රියදුරන් සම්බන්ධ කරගැනීමට ලියාපදිංචි වන්න.',au_name_lbl:'සම්පූර්ණ නම *',au_name_p:'උදා: කසුන් පෙරේරා',
+au_email_lbl:'ඊමේල් ලිපිනය *',au_email_p:'name@example.com',au_pass_lbl:'මුරපදය *',au_pass_p:'අවම වශයෙන් අකුරු 6ක්',au_conf_pass_lbl:'මුරපදය තහවුරු කරන්න *',au_conf_pass_p:'මුරපදය නැවත ඇතුළත් කරන්න',
+au_terms_agree:'මම Open Tours Ceylon රහස්‍යතා ප්‍රතිපත්තියට සහ සේවා නියමයන්ට එකඟ වෙමි.',au_signup_btn:'ගිණුම සාදා OTP ලබාගන්න',au_or_social:'නැතහොත් මේ හරහා',au_rem:'මාව මතක තබාගන්න',au_forgot_link:'මුරපදය අමතකද?',
+au_otp_title:'තහවුරු කිරීමේ කේතය (OTP)',au_otp_sub:'ඉලක්කම් 6 කේතය මෙම ඊමේල් ලිපිනයට එවන ලදී:',au_otp_demo_tip:'ආදර්ශන OTP කේතය (ස්වයංක්‍රීයව පිරවීමට ඔබන්න):',au_otp_verify_btn:'තහවුරු කර අවසන් කරන්න',au_otp_resend:'නැවත එවන්න',au_otp_expires:'කේතය කල් ඉකුත්වන්නේ:',au_otp_back:'නැවත ඇතුල් වීමට යන්න',
+au_forgot_title:'මුරපදය නැවත ලබාගැනීම',au_forgot_sub:'මුරපදය නැවත සකසන කේතය ලබාගැනීමට ඔබගේ ඊමේල් ලිපිනය ඇතුළත් කරන්න.',au_forgot_btn:'කේතය එවන්න',
+au_reset_pass_title:'නව මුරපදයක් සකසන්න',au_reset_pass_sub:'ඔබගේ නව මුරපදය පහතින් ඇතුළත් කරන්න.',au_new_pass_lbl:'නව මුරපදය *',au_conf_new_pass_lbl:'නව මුරපදය තහවුරු කරන්න *',au_reset_submit_btn:'නව මුරපදය සුරකින්න',
+au_profile_title:'සංචාරක ගිණුම',au_verified_badge:'සත්‍යාපිත සංචාරකයා',au_provider_lbl:'සම්බන්ධ වී ඇත්තේ',au_tab_history:'වෙන්කිරීම් ඉතිහාසය',au_tab_saved:'ප්‍රියතම සංචාර',
+au_no_history:'තවමත් වෙන්කිරීම් නොමැත. සත්‍යාපිත රියදුරන් සමඟ සංචාර වෙන්කරගන්න!',au_no_favs:'ප්‍රියතම සංචාර තවම නැත. සංචාර වල හදවත් ලකුණ ඔබන්න.',au_signout:'ඉවත් වන්න'}};
+let curLang=ls.get('lang','en');const t=k=>D[curLang][k]||D.en[k]||k;
 
 /* ---------- Data (sponsored:true = Featured / paid promotion badge) ---------- */
 const IMG=['https://images.unsplash.com/photo-1586523969943-2d62e3f0e2f5?auto=format&fit=crop&w=900&q=80','https://images.unsplash.com/photo-1566766189268-ec8d7e5cf9a8?auto=format&fit=crop&w=900&q=80','https://images.unsplash.com/photo-1568430462989-44163eb1752f?auto=format&fit=crop&w=900&q=80'];
@@ -262,7 +637,13 @@ const tours=[
 {id:2,title:'Ella Scenic Trip',dest:'Ella',operator:'Verified Partner',duration:'3 Days / 2 Nights',dur:'multi',price:120,unit:'per day',photos:[IMG[1],IMG[0]],includes:['Driver-guide','Fuel & parking','Tea factory visit','Nine Arches Bridge'],desc:"Wind through the hill country, hike Little Adam's Peak and visit a tea plantation.",reviews:[{s:5,n:'Sara',x:'Stunning views.'},{s:4,n:'Tom',x:'Very friendly driver.'}]},
 {id:3,title:'Mirissa Whale Watching',dest:'Mirissa',operator:'Verified Partner',duration:'Half Day (5 hrs)',dur:'half',price:45,unit:'per person',photos:[IMG[2],IMG[0]],includes:['Boat ticket','Breakfast','Life jacket','Hotel pickup'],desc:"Sail out at sunrise to spot blue whales and dolphins, then relax on Mirissa's golden beach.",reviews:[{s:5,n:'Joy',x:'Saw blue whales!'}]}];
 tours.forEach(x=>{if(savedRv[x.id])x.reviews.push(...savedRv[x.id])});
+const defaultUsers=[
+  {name:'Alex Morgan',email:'alex@example.com',password:'password123',provider:'local',verified:true,avatar:'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',createdAt:'2026-01-15'},
+  {name:'Kasun Perera',email:'kasun.p@facebook.com',password:'password123',provider:'facebook',verified:true,avatar:'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=200&q=80',createdAt:'2026-02-10'}
+];
+let usersDb=ls.get('otc_users',defaultUsers);
 let favs=ls.get('favs',[]),user=ls.get('user',null),hist=ls.get('hist',[]),nextId=10;
+let pendingAuth=null,otpCountdownTimer=null;
 
 /* ---------- Helpers ---------- */
 const avg=x=>x.reviews.length?x.reviews.reduce((a,r)=>a+r.s,0)/x.reviews.length:0;
@@ -380,14 +761,751 @@ $('rf').addEventListener('submit',e=>{e.preventDefault();
   const m=`Tourist Report\nName: ${$('rName').value}\nContact: ${$('rCon').value}\nTour/Driver: ${$('rTour').value}\nProblem: ${$('rMsg').value}`;
   window.open(wa(m),'_blank','noopener');$('rf').reset();close('m-report')});
 
-/* ---------- Optional tourist sign-in (demo: connect real OAuth, e.g. Firebase Auth, for production) ---------- */
+/* ==================================================================
+   USER AUTHENTICATION, OTP, PASSWORD RECOVERY & PROFILE ENGINE
+   ================================================================== */
+function updateNavUser(){
+  const nameEl=$('navUserName'),avaEl=$('navUserAvatar');
+  if(!nameEl||!avaEl)return;
+  if(user){
+    const first=user.name?user.name.split(' ')[0]:'User';
+    nameEl.textContent=first;
+    nameEl.classList.remove('hidden');
+    if(user.avatar){
+      avaEl.innerHTML=`<img src="${esc(user.avatar)}" alt="" class="w-full h-full object-cover">`;
+    }else{
+      const ini=(user.name||'U').slice(0,2).toUpperCase();
+      avaEl.className='w-6 h-6 rounded-full bg-amber-400 flex items-center justify-center text-[10px] font-bold text-slate-900 overflow-hidden';
+      avaEl.textContent=ini;
+    }
+  }else{
+    nameEl.textContent='';
+    nameEl.classList.add('hidden');
+    avaEl.className='w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-xs overflow-hidden text-amber-400';
+    avaEl.innerHTML='<i class="fa-regular fa-user"></i>';
+  }
+}
+
+function showAuthView(view){
+  const views=['viewLogin','viewSignup','viewOtp','viewForgot','viewNewPass','viewProfile'];
+  views.forEach(v=>{const e=$(v);if(e)e.classList.toggle('hidden',v!=='view'+view.charAt(0).toUpperCase()+view.slice(1))});
+  
+  const tabs=$('authTabs'),titleText=$('authTitleText');
+  const isLogOrSign=(view==='login'||view==='signup');
+  if(tabs)tabs.classList.toggle('hidden',!isLogOrSign);
+
+  ['loginErr','regErr','otpErr','forgotErr','newPassErr'].forEach(id=>{const el=$(id);if(el)el.classList.add('hidden')});
+
+  if(view==='login'){
+    if(titleText)titleText.textContent=t('au_welcome');
+    $('tabBtnLogin').className='pb-2.5 px-4 text-amber-400 border-b-2 border-amber-400 transition-all flex items-center gap-1.5';
+    $('tabBtnSignup').className='pb-2.5 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent transition-all flex items-center gap-1.5';
+  }else if(view==='signup'){
+    if(titleText)titleText.textContent=t('au_signup_title');
+    $('tabBtnSignup').className='pb-2.5 px-4 text-amber-400 border-b-2 border-amber-400 transition-all flex items-center gap-1.5';
+    $('tabBtnLogin').className='pb-2.5 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent transition-all flex items-center gap-1.5';
+  }else if(view==='otp'){
+    if(titleText)titleText.textContent=t('au_otp_title');
+    if(pendingAuth){
+      $('otpEmailTarget').textContent=pendingAuth.email;
+      $('otpDemoDisplay').textContent=pendingAuth.code;
+    }
+    clearOtpInputs();
+    startOtpCountdown();
+  }else if(view==='forgot'){
+    if(titleText)titleText.textContent=t('au_forgot_title');
+  }else if(view==='newPass'){
+    if(titleText)titleText.textContent=t('au_reset_pass_title');
+  }else if(view==='profile'){
+    if(titleText)titleText.textContent=t('au_profile_title');
+    renderProfileData();
+  }
+}
+
 function renderAuth(){
-  $('authOut').classList.toggle('hidden',!!user);$('authIn').classList.toggle('hidden',!user);
-  if(!user)return;$('who').textContent='✔ '+user.p;
-  $('hist').innerHTML=hist.length?hist.map(h=>`<li>${esc(h.title)} · $${esc(h.price)} · ${esc(h.at)}</li>`).join(''):'<li>–</li>';
-  $('favs').innerHTML=favs.length?favs.map(i=>`<li>${esc((tours.find(v=>v.id===i)||{}).title||'')}</li>`).join(''):'<li>–</li>'}
-document.querySelectorAll('[data-prov]').forEach(b=>b.onclick=()=>{user={p:b.dataset.prov};ls.set('user',user);renderAuth()});
-$('out').onclick=()=>{user=null;ls.set('user',null);renderAuth()};
+  if(user){
+    showAuthView('profile');
+  }else{
+    showAuthView('login');
+  }
+}
+
+// Password toggle helper
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.toggle-pass');
+  if(!b)return;
+  const targetId=b.dataset.target,input=$(targetId);
+  if(!input)return;
+  const isPass=input.type==='password';
+  input.type=isPass?'text':'password';
+  const icon=b.querySelector('i');
+  if(icon){
+    icon.className=isPass?'fa-regular fa-eye-slash':'fa-regular fa-eye';
+  }
+});
+
+// Tab Switchers
+$('tabBtnLogin').onclick=()=>showAuthView('login');
+$('tabBtnSignup').onclick=()=>showAuthView('signup');
+$('btnGoForgot').onclick=()=>showAuthView('forgot');
+$('btnBackFromForgot').onclick=()=>showAuthView('login');
+$('btnCancelOtp').onclick=()=>showAuthView(pendingAuth&&pendingAuth.type==='signup'?'signup':'login');
+
+// Form Login
+$('formLogin').addEventListener('submit',e=>{
+  e.preventDefault();
+  const err=$('loginErr');err.classList.add('hidden');
+  const email=$('loginEmail').value.trim().toLowerCase();
+  const pass=$('loginPass').value;
+  if(!email||!pass){
+    err.textContent=curLang==='si'?'කරුණාකර සියලු විස්තර ඇතුළත් කරන්න.':'Please enter both email and password.';
+    err.classList.remove('hidden');return;
+  }
+  const found=usersDb.find(u=>u.email.toLowerCase()===email&&u.password===pass);
+  if(!found){
+    err.textContent=curLang==='si'?'ඊමේල් ලිපිනය හෝ මුරපදය වැරදිය.':'Invalid email or password.';
+    err.classList.remove('hidden');return;
+  }
+  user={name:found.name,email:found.email,provider:found.provider||'local',verified:!!found.verified,avatar:found.avatar||null};
+  ls.set('user',user);
+  updateNavUser();
+  toast((curLang==='si'?'සාදරයෙන් පිළිගනිමු ':'Welcome back, ')+user.name+'!');
+  showAuthView('profile');
+});
+
+// Form Signup
+$('formSignup').addEventListener('submit',e=>{
+  e.preventDefault();
+  const err=$('regErr');err.classList.add('hidden');
+  const name=$('regName').value.trim();
+  const email=$('regEmail').value.trim().toLowerCase();
+  const pass=$('regPass').value;
+  const conf=$('regPassConf').value;
+  const terms=$('regTerms').checked;
+  if(!name||!email||!pass||!conf){
+    err.textContent=curLang==='si'?'කරුණාකර සියලු අත්‍යවශ්‍ය තොරතුරු පුරවන්න.':'Please fill in all required fields.';
+    err.classList.remove('hidden');return;
+  }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    err.textContent=curLang==='si'?'වලංගු ඊමේල් ලිපිනයක් ඇතුළත් කරන්න.':'Please enter a valid email address.';
+    err.classList.remove('hidden');return;
+  }
+  if(pass.length<6){
+    err.textContent=curLang==='si'?'මුරපදය අවම වශයෙන් අකුරු 6ක් විය යුතුය.':'Password must be at least 6 characters.';
+    err.classList.remove('hidden');return;
+  }
+  if(pass!==conf){
+    err.textContent=curLang==='si'?'මුරපද දෙක නොගැලපේ.':'Passwords do not match.';
+    err.classList.remove('hidden');return;
+  }
+  if(!terms){
+    err.textContent=curLang==='si'?'සේවා නියමයන්ට එකඟ විය යුතුය.':'You must agree to the Terms of Service.';
+    err.classList.remove('hidden');return;
+  }
+  const exists=usersDb.some(u=>u.email.toLowerCase()===email);
+  if(exists){
+    err.textContent=curLang==='si'?'මෙම ඊමේල් ලිපිනයෙන් දැනටමත් ගිණුමක් ඇත. කරුණාකර ඇතුල් වන්න.':'An account with this email already exists. Please sign in.';
+    err.classList.remove('hidden');return;
+  }
+  const code=Math.floor(100000+Math.random()*900000).toString();
+  pendingAuth={type:'signup',name,email,password:pass,code,expiresAt:Date.now()+120000};
+  showAuthView('otp');
+  toast((curLang==='si'?'තහවුරු කිරීමේ OTP කේතය: ':'Your OTP code is: ')+code);
+});
+
+// OTP Input Logic
+const otpInputs=[...document.querySelectorAll('.otp-box')];
+function clearOtpInputs(){
+  otpInputs.forEach(i=>i.value='');
+  if(otpInputs[0])setTimeout(()=>otpInputs[0].focus(),50);
+}
+otpInputs.forEach((inp,idx)=>{
+  inp.addEventListener('input',e=>{
+    const v=e.target.value.replace(/\D/g,'');
+    e.target.value=v?v.slice(-1):'';
+    if(v&&idx<otpInputs.length-1){
+      otpInputs[idx+1].focus();
+    }
+  });
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Backspace'&&!e.target.value&&idx>0){
+      otpInputs[idx-1].focus();
+    }
+  });
+  inp.addEventListener('paste',e=>{
+    e.preventDefault();
+    const pasteData=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
+    pasteData.split('').forEach((digit,i)=>{if(otpInputs[i])otpInputs[i].value=digit});
+    if(pasteData.length===6&&otpInputs[5])otpInputs[5].focus();
+  });
+});
+
+$('otpAutoFillBanner').onclick=()=>{
+  if(!pendingAuth)return;
+  pendingAuth.code.split('').forEach((ch,i)=>{if(otpInputs[i])otpInputs[i].value=ch});
+  toast(curLang==='si'?'OTP කේතය පුරවන ලදී!':'OTP Code auto-filled!');
+};
+
+function startOtpCountdown(){
+  clearInterval(otpCountdownTimer);
+  const disp=$('otpTimerDisplay'),resBtn=$('btnResendOtp');
+  if(resBtn)resBtn.disabled=true;
+  function update(){
+    if(!pendingAuth){clearInterval(otpCountdownTimer);return}
+    const rem=Math.max(0,Math.ceil((pendingAuth.expiresAt-Date.now())/1000));
+    const m=String(Math.floor(rem/60)).padStart(2,'0'),s=String(rem%60).padStart(2,'0');
+    if(disp)disp.textContent=`${m}:${s}`;
+    if(rem<=0){
+      clearInterval(otpCountdownTimer);
+      if(resBtn)resBtn.disabled=false;
+    }
+  }
+  update();
+  otpCountdownTimer=setInterval(update,1000);
+}
+
+$('btnResendOtp').onclick=()=>{
+  if(!pendingAuth)return;
+  const newCode=Math.floor(100000+Math.random()*900000).toString();
+  pendingAuth.code=newCode;
+  pendingAuth.expiresAt=Date.now()+120000;
+  $('otpDemoDisplay').textContent=newCode;
+  clearOtpInputs();
+  startOtpCountdown();
+  toast((curLang==='si'?'නව OTP කේතය යවන ලදී: ':'New OTP sent: ')+newCode);
+};
+
+$('btnVerifyOtp').onclick=()=>{
+  const err=$('otpErr');err.classList.add('hidden');
+  const code=otpInputs.map(i=>i.value).join('');
+  if(code.length<6){
+    err.textContent=curLang==='si'?'කරුණාකර ඉලක්කම් 6ම ඇතුළත් කරන්න.':'Please enter the full 6-digit verification code.';
+    err.classList.remove('hidden');return;
+  }
+  if(!pendingAuth||Date.now()>pendingAuth.expiresAt){
+    err.textContent=curLang==='si'?'කේතය කල් ඉකුත් වී ඇත. නැවත කේතයක් ලබාගන්න.':'Verification code has expired. Please resend code.';
+    err.classList.remove('hidden');return;
+  }
+  if(code!==pendingAuth.code){
+    err.textContent=curLang==='si'?'කේතය වැරදිය. කරුණාකර නැවත උත්සාහ කරන්න.':'Invalid verification code. Please check and try again.';
+    err.classList.remove('hidden');return;
+  }
+  if(pendingAuth.type==='signup'){
+    const newUser={name:pendingAuth.name,email:pendingAuth.email,password:pendingAuth.password,provider:'local',verified:true,avatar:null,createdAt:new Date().toISOString()};
+    usersDb.push(newUser);ls.set('otc_users',usersDb);
+    user={name:newUser.name,email:newUser.email,provider:'local',verified:true,avatar:null};
+    ls.set('user',user);
+    updateNavUser();
+    pendingAuth=null;
+    toast(curLang==='si'?'ගිණුම සත්‍යාපනය විය! සාදරයෙන් පිළිගනිමු.':'Account verified successfully! Welcome.');
+    showAuthView('profile');
+  }else if(pendingAuth.type==='reset'){
+    showAuthView('newPass');
+  }
+};
+
+// Form Forgot Password
+$('formForgot').addEventListener('submit',e=>{
+  e.preventDefault();
+  const err=$('forgotErr');err.classList.add('hidden');
+  const email=$('forgotEmail').value.trim().toLowerCase();
+  if(!email){
+    err.textContent=curLang==='si'?'කරුණාකර ඊමේල් ලිපිනය ඇතුළත් කරන්න.':'Please enter your email.';
+    err.classList.remove('hidden');return;
+  }
+  const code=Math.floor(100000+Math.random()*900000).toString();
+  pendingAuth={type:'reset',email,code,expiresAt:Date.now()+120000};
+  showAuthView('otp');
+  toast((curLang==='si'?'මුරපදය නැවත සැකසීමේ කේතය: ':'Password reset code: ')+code);
+});
+
+// Form Set New Password
+$('formNewPass').addEventListener('submit',e=>{
+  e.preventDefault();
+  const err=$('newPassErr');err.classList.add('hidden');
+  const p1=$('resetNewPass').value,p2=$('resetConfPass').value;
+  if(p1.length<6){
+    err.textContent=curLang==='si'?'නව මුරපදය අවම වශයෙන් අකුරු 6ක් විය යුතුය.':'Password must be at least 6 characters.';
+    err.classList.remove('hidden');return;
+  }
+  if(p1!==p2){
+    err.textContent=curLang==='si'?'මුරපද දෙක නොගැලපේ.':'Passwords do not match.';
+    err.classList.remove('hidden');return;
+  }
+  const uIndex=usersDb.findIndex(u=>u.email.toLowerCase()===pendingAuth.email.toLowerCase());
+  if(uIndex>=0){
+    usersDb[uIndex].password=p1;
+  }else{
+    usersDb.push({name:pendingAuth.email.split('@')[0],email:pendingAuth.email,password:p1,provider:'local',verified:true,createdAt:new Date().toISOString()});
+  }
+  ls.set('otc_users',usersDb);
+  toast(t('au_pass_success')||'Password updated successfully! Please sign in.');
+  $('loginEmail').value=pendingAuth.email;
+  $('loginPass').value='';
+  pendingAuth=null;
+  showAuthView('login');
+});
+
+// Social Authentication Dialog & Actions
+const SOCIAL_ACCOUNTS={
+  google:[
+    {name:'Alex Morgan',email:'alex.morgan@gmail.com',avatar:'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',sub:'Connected Google Account'},
+    {name:'Elena Rossi',email:'elena.traveler@gmail.com',avatar:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',sub:'Tourist • Italy'},
+    {name:'Sign in with Custom Google User',email:'',custom:true}
+  ],
+  facebook:[
+    {name:'Kasun Perera',email:'kasun.p@facebook.com',avatar:'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=200&q=80',sub:'Facebook Profile'},
+    {name:'Continue as Guest Tourist',email:'tourist.fb@open-tours.lk',avatar:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',sub:'Instant Facebook Auth'}
+  ]
+};
+
+document.querySelectorAll('[data-social]').forEach(btn=>{
+  btn.onclick=()=>{
+    const prov=btn.dataset.social;
+    const title=$('socModalTitle'),sub=$('socModalSub'),list=$('socAccountsList');
+    if(prov==='google'){
+      title.innerHTML='<svg class="w-5 h-5 inline" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.24v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.24C.45 8.15 0 9.92 0 12s.45 3.85 1.24 5.42l4.04-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.24 6.58l4.04 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg> Google Sign-In';
+      sub.textContent='Choose an account to continue to Open Tours Ceylon';
+    }else{
+      title.innerHTML='<i class="fa-brands fa-facebook-f text-blue-500"></i> Facebook Sign-In';
+      sub.textContent='Log in with your Facebook credentials';
+    }
+    const accs=SOCIAL_ACCOUNTS[prov]||[];
+    list.innerHTML=accs.map((a,i)=>`
+      <button type="button" data-soc-pick="${i}" class="w-full p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 flex items-center gap-3 text-left transition-all">
+        ${a.avatar?`<img src="${esc(a.avatar)}" class="w-9 h-9 rounded-full object-cover shrink-0">`:`<div class="w-9 h-9 rounded-full bg-amber-400 text-slate-900 font-bold flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-user"></i></div>`}
+        <div class="min-w-0 flex-1">
+          <p class="text-xs font-semibold text-white truncate">${esc(a.name)}</p>
+          <p class="text-[11px] text-slate-400 truncate">${esc(a.email||a.sub||'')}</p>
+        </div>
+        <i class="fa-solid fa-chevron-right text-slate-500 text-xs"></i>
+      </button>
+    `).join('');
+    list.querySelectorAll('[data-soc-pick]').forEach((itemBtn,i)=>{
+      itemBtn.onclick=()=>{
+        const chosen=accs[i];
+        let name=chosen.name,email=chosen.email;
+        if(chosen.custom){
+          const promptName=prompt(curLang==='si'?'ඔබගේ නම:':'Enter your Name:', 'Tourist');
+          if(!promptName)return;
+          name=promptName;
+          email=name.toLowerCase().replace(/\s+/g,'')+`@${prov}.com`;
+        }
+        user={name,email,provider:prov,verified:true,avatar:chosen.avatar||null};
+        ls.set('user',user);
+        if(!usersDb.some(u=>u.email===email)){
+          usersDb.push({name,email,provider:prov,verified:true,avatar:user.avatar,createdAt:new Date().toISOString()});
+          ls.set('otc_users',usersDb);
+        }
+        updateNavUser();
+        close('m-social');
+        toast((curLang==='si'?'සාර්ථකව ඇතුල් විය: ':'Signed in with ')+prov.toUpperCase()+` (${name})`);
+        showAuthView('profile');
+      };
+    });
+    open('m-social');
+  };
+});
+
+// Profile View Data & Actions
+function renderProfileData(){
+  if(!user)return;
+  $('profName').textContent=user.name||'Tourist';
+  $('profEmail').textContent=user.email||'';
+  $('profProvider').textContent=user.provider?user.provider.toUpperCase():'LOCAL';
+  const ava=$('profAvatar');
+  if(user.avatar){
+    ava.innerHTML=`<img src="${esc(user.avatar)}" class="w-full h-full object-cover">`;
+  }else{
+    ava.className='w-12 h-12 rounded-full overflow-hidden flex items-center justify-center font-bold text-slate-900 bg-amber-400 text-lg shrink-0 border-2 border-amber-400/40';
+    ava.textContent=(user.name||'U').slice(0,2).toUpperCase();
+  }
+  renderProfHistory();
+  renderProfFavs();
+}
+
+function renderProfHistory(){
+  const list=$('profHistList');
+  if(!hist||!hist.length){
+    list.innerHTML=`<li class="p-4 text-center text-slate-400 bg-slate-900/50 rounded-xl border border-slate-800">${esc(t('au_no_history'))}</li>`;
+    return;
+  }
+  list.innerHTML=hist.map(h=>`
+    <li class="p-3 bg-slate-800/60 border border-slate-700/60 rounded-xl flex items-center justify-between gap-2">
+      <div>
+        <p class="font-semibold text-white text-xs">${esc(h.title)}</p>
+        <p class="text-[11px] text-amber-400">$${esc(h.price)} <span class="text-slate-400">· ${esc(h.at)}</span></p>
+      </div>
+      <a href="${wa(`Hi, regarding my booking for ${h.title}`)}" target="_blank" rel="noopener" class="px-2.5 py-1 rounded-lg bg-green-600/30 hover:bg-green-600 border border-green-500/40 text-green-300 hover:text-white text-[11px] font-semibold flex items-center gap-1 transition-all">
+        <i class="fa-brands fa-whatsapp"></i>${esc(t('contact'))}
+      </a>
+    </li>
+  `).join('');
+}
+
+function renderProfFavs(){
+  const list=$('profFavsList');
+  const favItems=favs.map(id=>tours.find(x=>x.id===id)).filter(Boolean);
+  if(!favItems.length){
+    list.innerHTML=`<li class="p-4 text-center text-slate-400 bg-slate-900/50 rounded-xl border border-slate-800">${esc(t('au_no_favs'))}</li>`;
+    return;
+  }
+  list.innerHTML=favItems.map(x=>`
+    <li class="p-2.5 bg-slate-800/60 border border-slate-700/60 rounded-xl flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <img src="${esc(x.photos[0])}" class="w-10 h-10 rounded-lg object-cover shrink-0">
+        <div class="min-w-0">
+          <p class="font-semibold text-white text-xs truncate">${esc(x.title)}</p>
+          <p class="text-[11px] text-amber-400">$${esc(x.price)} <span class="text-slate-400">· ${esc(x.dest)}</span></p>
+        </div>
+      </div>
+      <button type="button" data-rem-fav="${x.id}" class="text-red-400 hover:text-red-300 text-xs px-2 py-1 rounded hover:bg-red-950/40 transition-all" title="Remove">
+        <i class="fa-solid fa-trash-can"></i>
+      </button>
+    </li>
+  `).join('');
+  list.querySelectorAll('[data-rem-fav]').forEach(btn=>{
+    btn.onclick=()=>{
+      const fid=+btn.dataset.remFav;
+      favs=favs.filter(i=>i!==fid);
+      ls.set('favs',favs);
+      renderProfFavs();
+      render();
+    };
+  });
+}
+
+$('tabProfHist').onclick=()=>{
+  $('profHistBox').classList.remove('hidden');$('profFavsBox').classList.add('hidden');
+  $('tabProfHist').className='pb-2 px-3 text-amber-400 border-b-2 border-amber-400 transition-all flex items-center gap-1.5';
+  $('tabProfFavs').className='pb-2 px-3 text-slate-400 hover:text-slate-200 border-b-2 border-transparent transition-all flex items-center gap-1.5';
+};
+$('tabProfFavs').onclick=()=>{
+  $('profFavsBox').classList.remove('hidden');$('profHistBox').classList.add('hidden');
+  $('tabProfFavs').className='pb-2 px-3 text-amber-400 border-b-2 border-amber-400 transition-all flex items-center gap-1.5';
+  $('tabProfHist').className='pb-2 px-3 text-slate-400 hover:text-slate-200 border-b-2 border-transparent transition-all flex items-center gap-1.5';
+};
+
+$('btnSignOut').onclick=()=>{
+  user=null;
+  ls.set('user',null);
+  updateNavUser();
+  toast(curLang==='si'?'ගිණුමෙන් ඉවත් විය.':'Signed out successfully.');
+  showAuthView('login');
+};
+
+/* ==================================================================
+   INTERACTIVE GOOGLE MAP & NEARBY EXPLORER ENGINE
+   ================================================================== */
+const MAP_LOCATIONS=[
+  /* 8 Drivers */
+  {id:'d1',cat:'drivers',name:'Nimal Perera',dest:'Kandy',lat:7.2906,lng:80.6337,rating:4.9,toursCount:42,price:65,unit:'day',vehicle:'Toyota KDH 14-Seater (A/C)',status:'Available Now',phone:'94771234567',photo:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80',desc:'Verified Central Highlands & Cultural Triangle driver-guide with 10+ years experience.'},
+  {id:'d2',cat:'drivers',name:'Sunil Jayasuriya',dest:'Sigiriya',lat:7.9570,lng:80.7603,rating:5.0,toursCount:68,price:80,unit:'day',vehicle:'Land Cruiser 4x4 Safari Jeep',status:'Available Now',phone:'94713061980',photo:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80',desc:'Specialist in Minneriya wild elephant gatherings and Sigiriya rock excursions.'},
+  {id:'d3',cat:'drivers',name:'Dinesh Fernando',dest:'Mirissa',lat:5.9482,lng:80.4578,rating:4.8,toursCount:35,price:45,unit:'day',vehicle:'Luxury A/C Sedan',status:'Available Now',phone:'94769876543',photo:'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80',desc:'Coastal south guide: whale watching transfers, Galle Fort history, and surf spot transport.'},
+  {id:'d4',cat:'drivers',name:'Rohan Silva',dest:'Ella',lat:6.8667,lng:81.0466,rating:4.9,toursCount:53,price:75,unit:'day',vehicle:'Hill Country Mini Coach',status:'Available Now',phone:'94704567890',photo:'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=300&q=80',desc:'Scenic train pickup, Nine Arches Bridge viewpoint guide, and Little Adams Peak walks.'},
+  {id:'d5',cat:'drivers',name:'Chaminda Wickramasinghe',dest:'Colombo',lat:6.9271,lng:79.8612,rating:4.9,toursCount:81,price:55,unit:'day',vehicle:'Mercedes Tour Van',status:'Available Now',phone:'94778889900',photo:'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=300&q=80',desc:'Bandaranaike BIA Airport pickup & VIP drop-off with Colombo city architectural heritage.'},
+  {id:'d6',cat:'drivers',name:'Pradeep Kumara',dest:'Yala',lat:6.2800,lng:81.2870,rating:5.0,toursCount:94,price:90,unit:'day',vehicle:'4WD Safari Jeep with Wildlife Tracker',status:'Available Now',phone:'94723334455',photo:'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80',desc:'Certified wildlife spotter for Yala & Bundala leopard, bear and bird photography.'},
+  {id:'d7',cat:'drivers',name:'Asanka De Silva',dest:'Galle',lat:6.0535,lng:80.2210,rating:4.8,toursCount:29,price:50,unit:'day',vehicle:'Southern Coast Hybrid Sedan',status:'Available Now',phone:'94751112233',photo:'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',desc:'Galle Dutch Fort walking tour specialist, lighthouse visits, and sea turtle sanctuary.'},
+  {id:'d8',cat:'drivers',name:'Mahesh Senanayake',dest:'Nuwara Eliya',lat:6.9497,lng:80.7891,rating:4.9,toursCount:47,price:70,unit:'day',vehicle:'Tea Country SUV 4WD',status:'Available Now',phone:'94785556677',photo:'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80',desc:'High altitude tea estate tours, Gregory lake boating, and Horton Plains Worlds End.'},
+
+  /* 7 Attractions */
+  {id:'s1',cat:'spots',name:'Sigiriya Lion Rock Fortress',dest:'Sigiriya',lat:7.9570,lng:80.7603,rating:5.0,tag:'UNESCO World Heritage',photo:'https://images.unsplash.com/photo-1586523969943-2d62e3f0e2f5?auto=format&fit=crop&w=400&q=80',desc:'Ancient 5th-century palace complex atop a 200m vertical monolith with fresco paintings.'},
+  {id:'s2',cat:'spots',name:'Nine Arches Bridge',dest:'Ella',lat:6.8768,lng:81.0608,rating:4.9,tag:'Iconic Viaduct',photo:'https://images.unsplash.com/photo-1566766189268-ec8d7e5cf9a8?auto=format&fit=crop&w=400&q=80',desc:'Magnificent colonial stone bridge surrounded by jungle and emerald green tea hills.'},
+  {id:'s3',cat:'spots',name:'Mirissa Whale Watching Pier',dest:'Mirissa',lat:5.9452,lng:80.4520,rating:4.8,tag:'Ocean Safari',photo:'https://images.unsplash.com/photo-1568430462989-44163eb1752f?auto=format&fit=crop&w=400&q=80',desc:'Indian Ocean hotspot to observe majestic blue whales, sperm whales and acrobatic spinner dolphins.'},
+  {id:'s4',cat:'spots',name:'Temple of the Sacred Tooth',dest:'Kandy',lat:7.2936,lng:80.6413,rating:4.9,tag:'Royal Palace Shrine',photo:'https://images.unsplash.com/photo-1588598198321-9735fd52455b?auto=format&fit=crop&w=400&q=80',desc:'Sri Dalada Maligawa, golden-roofed Buddhist temple housing the sacred tooth relic of Gautama Buddha.'},
+  {id:'s5',cat:'spots',name:'Yala National Park Safari Gate',dest:'Yala',lat:6.3687,lng:81.5178,rating:5.0,tag:'Wildlife Sanctuary',photo:'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=400&q=80',desc:'Premier park with world-renowned density of leopards, wild sloth bears, and herds of Asian elephants.'},
+  {id:'s6',cat:'spots',name:'Galle Dutch Fort & Lighthouse',dest:'Galle',lat:6.0268,lng:80.2170,rating:4.8,tag:'Living Heritage City',photo:'https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?auto=format&fit=crop&w=400&q=80',desc:'Historic seaside ramparts, boutique cobblestone lanes, colonial museums, and breathtaking sunset bastions.'},
+  {id:'s7',cat:'spots',name:'Little Adams Peak Trailhead',dest:'Ella',lat:6.8600,lng:81.0500,rating:4.9,tag:'Panoramic Mountain Trek',photo:'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=400&q=80',desc:'Effortless sunrise hike across ridges with endless 360-degree views across Ella Gap and waterfalls.'},
+
+  /* 4 Travelers */
+  {id:'t1',cat:'travelers',name:'Elena & Marco (Italy)',dest:'Ella',lat:6.8720,lng:81.0420,status:'Looking for companions',avatar:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80',desc:'Hiking Ella Rock at sunrise tomorrow. Looking for 2 travelers to share a verified van driver.'},
+  {id:'t2',cat:'travelers',name:'Sarah Jenkins (UK)',dest:'Mirissa',lat:5.9490,lng:80.4600,status:'Solo Traveler',avatar:'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80',desc:'Backpacker heading out for morning blue whale boat trip. Want to connect with fellow travelers.'},
+  {id:'t3',cat:'travelers',name:'David & Klaus (Germany)',dest:'Sigiriya',lat:7.9620,lng:80.7550,status:'Couple on Safari',avatar:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',desc:'Visiting Pidurangala sunset point today. Open to sharing 4x4 safari jeep ride to Minneriya.'},
+  {id:'t4',cat:'travelers',name:'Maya Lin (Singapore)',dest:'Kandy',lat:7.2980,lng:80.6380,status:'Culture Explorer',avatar:'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',desc:'Visiting Temple of Tooth and botanical gardens today. Looking for safe verified driver.'}
+];
+
+let mapInstance=null,mapTileLayers={},currentMapLayer='roadmap',activeMapCat='all',userLocationMarker=null,userCoords=null;
+let mapMarkerRefs={};
+
+function haversineDist(lat1,lon1,lat2,lon2){
+  const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+  return Math.round((R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)))*10)/10;
+}
+
+function initInteractiveMap(){
+  const canvas=$('mapCanvas');
+  if(!canvas||mapInstance)return;
+  if(typeof L==='undefined')return;
+
+  // Initialize Leaflet Map centered on Sri Lanka
+  mapInstance=L.map('mapCanvas',{
+    center:[7.8731,80.7718],
+    zoom:7.8,
+    minZoom:7,
+    maxZoom:18,
+    zoomControl:true,
+    scrollWheelZoom:false
+  });
+
+  // Google Map Tile Layers + Dark Theme Layer
+  mapTileLayers.roadmap=L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+    maxZoom:19,
+    attribution:'&copy; Google Maps'
+  });
+  mapTileLayers.satellite=L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',{
+    maxZoom:19,
+    attribution:'&copy; Google Maps Satellite'
+  });
+  mapTileLayers.terrain=L.tileLayer('https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
+    maxZoom:19,
+    attribution:'&copy; Google Maps Terrain'
+  });
+  mapTileLayers.dark=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+    maxZoom:19,
+    attribution:'&copy; OpenStreetMap, &copy; CARTO'
+  });
+
+  mapTileLayers.roadmap.addTo(mapInstance);
+
+  // Layer Switcher
+  $('mapLayerSel').onchange=e=>{
+    const chosen=e.target.value;
+    if(mapTileLayers[chosen]){
+      Object.values(mapTileLayers).forEach(l=>mapInstance.removeLayer(l));
+      mapTileLayers[chosen].addTo(mapInstance);
+      currentMapLayer=chosen;
+    }
+  };
+
+  // Category Filter Tabs
+  document.querySelectorAll('#mapCatFilters button').forEach(b=>{
+    b.onclick=()=>{
+      document.querySelectorAll('#mapCatFilters button').forEach(btn=>{
+        btn.className='map-cat-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-all flex items-center gap-1.5';
+      });
+      b.className='map-cat-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-500 text-slate-900 transition-all flex items-center gap-1.5';
+      activeMapCat=b.dataset.cat;
+      renderMapPins();
+    };
+  });
+
+  // Search input filter
+  $('mapSearch').addEventListener('input',()=>renderMapPins());
+
+  // Geolocation Locate Me
+  $('mapLocateBtn').onclick=handleLocateUser;
+
+  renderMapPins();
+
+  // Invalidate size when user scrolls into map
+  window.addEventListener('resize',()=>mapInstance&&mapInstance.invalidateSize());
+  const mapObs=new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{if(entry.isIntersecting&&mapInstance)mapInstance.invalidateSize()});
+  },{threshold:0.1});
+  mapObs.observe(canvas);
+}
+
+function makeMapIcon(cat,pulse=false){
+  let iconClass='fa-car',bgClass='bg-amber-400 text-slate-900 border-amber-300';
+  if(cat==='spots'){iconClass='fa-camera';bgClass='bg-emerald-500 text-white border-emerald-400'}
+  else if(cat==='travelers'){iconClass='fa-user';bgClass='bg-sky-400 text-slate-900 border-sky-300'}
+  else if(cat==='me'){iconClass='fa-location-crosshairs';bgClass='bg-cyan-400 text-slate-900 border-white'}
+
+  return L.divIcon({
+    className:'custom-map-marker',
+    html:`<div class="relative flex items-center justify-center w-8 h-8 rounded-full ${bgClass} border-2 shadow-lg cursor-pointer ${pulse?'map-pulse':''} hover:scale-110 transition-transform">
+            <i class="fa-solid ${iconClass} text-xs"></i>
+          </div>`,
+    iconSize:[32,32],
+    iconAnchor:[16,16],
+    popupAnchor:[0,-18]
+  });
+}
+
+function renderMapPins(){
+  if(!mapInstance)return;
+  // Clear existing pins
+  Object.values(mapMarkerRefs).forEach(m=>mapInstance.removeLayer(m));
+  mapMarkerRefs={};
+
+  const q=($('mapSearch').value||'').trim().toLowerCase();
+  let filtered=MAP_LOCATIONS.filter(item=>{
+    const matchCat=(activeMapCat==='all'||item.cat===activeMapCat);
+    const matchQ=!q||[item.name,item.dest,item.desc,item.vehicle||''].join(' ').toLowerCase().includes(q);
+    return matchCat&&matchQ;
+  });
+
+  // If user location exists, calculate distances & sort
+  if(userCoords){
+    filtered.forEach(it=>{it.dist=haversineDist(userCoords.lat,userCoords.lng,it.lat,it.lng)});
+    filtered.sort((a,b)=>(a.dist||0)-(b.dist||0));
+  }
+
+  // Add markers
+  filtered.forEach(item=>{
+    const distText=item.dist?`<span class="px-2 py-0.5 rounded-full bg-slate-800 text-[10px] text-amber-300 border border-slate-700">${item.dist} km ${esc(t('map_km_away')||'away')}</span>`:'';
+    let popupHtml='';
+    if(item.cat==='drivers'){
+      popupHtml=`
+        <div class="p-3 w-64 bg-slate-900 text-white">
+          <div class="flex items-center gap-2 mb-2">
+            <img src="${esc(item.photo)}" class="w-10 h-10 rounded-full object-cover border border-amber-400">
+            <div>
+              <p class="font-bold text-xs text-white leading-tight">${esc(item.name)}</p>
+              <p class="text-[11px] text-amber-400"><i class="fa-solid fa-location-dot mr-1"></i>${esc(item.dest)}</p>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-300 mb-2">${esc(item.desc)}</p>
+          <div class="flex items-center justify-between text-xs mb-2">
+            <span class="text-amber-400 font-bold">$${esc(item.price)} <span class="text-slate-400 text-[10px]">/${esc(item.unit)}</span></span>
+            <span class="text-[11px] text-slate-400"><i class="fa-solid fa-star text-amber-400 mr-0.5"></i>${item.rating} (${item.toursCount})</span>
+          </div>
+          <div class="flex items-center justify-between gap-1 mb-2">
+            <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>${esc(t('map_available'))}
+            </span>
+            ${distText}
+          </div>
+          <a href="${wa(`Hi ${item.name}, I found your listing on Open Tours Ceylon Map and would like to check availability for ${item.dest}`)}" target="_blank" rel="noopener" class="w-full py-1.5 rounded-lg bg-green-600 hover:bg-green-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all">
+            <i class="fa-brands fa-whatsapp"></i>${esc(t('map_chat_wa'))}
+          </a>
+        </div>
+      `;
+    }else if(item.cat==='spots'){
+      popupHtml=`
+        <div class="p-3 w-64 bg-slate-900 text-white">
+          <img src="${esc(item.photo)}" class="w-full h-24 rounded-lg object-cover mb-2">
+          <p class="font-bold text-xs text-white leading-tight mb-0.5">${esc(item.name)}</p>
+          <p class="text-[11px] text-emerald-400 mb-1.5"><i class="fa-solid fa-tag mr-1"></i>${esc(item.tag)}</p>
+          <p class="text-[11px] text-slate-300 mb-2 leading-relaxed">${esc(item.desc)}</p>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-slate-400"><i class="fa-solid fa-location-dot text-emerald-400 mr-1"></i>${esc(item.dest)}</span>
+            ${distText}
+          </div>
+          <a href="#tours" onclick="filterTourDestination('${esc(item.dest)}')" class="w-full py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-900 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all">
+            <i class="fa-solid fa-route"></i>Browse Tours Here
+          </a>
+        </div>
+      `;
+    }else{
+      popupHtml=`
+        <div class="p-3 w-64 bg-slate-900 text-white">
+          <div class="flex items-center gap-2 mb-2">
+            <img src="${esc(item.avatar)}" class="w-10 h-10 rounded-full object-cover border border-sky-400">
+            <div>
+              <p class="font-bold text-xs text-white leading-tight">${esc(item.name)}</p>
+              <p class="text-[11px] text-sky-400"><i class="fa-solid fa-user-group mr-1"></i>${esc(item.status)}</p>
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-300 mb-2">${esc(item.desc)}</p>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-slate-400"><i class="fa-solid fa-location-dot text-sky-400 mr-1"></i>${esc(item.dest)}</span>
+            ${distText}
+          </div>
+          <a href="${wa(`Hi ${item.name}, I saw your post on Open Tours Ceylon Map in ${item.dest}`)}" target="_blank" rel="noopener" class="w-full py-1.5 rounded-lg bg-green-600 hover:bg-green-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all">
+            <i class="fa-brands fa-whatsapp"></i>Connect via WhatsApp
+          </a>
+        </div>
+      `;
+    }
+
+    const marker=L.marker([item.lat,item.lng],{icon:makeMapIcon(item.cat,item.cat==='drivers')})
+      .bindPopup(popupHtml,{maxWidth:280});
+    marker.addTo(mapInstance);
+    mapMarkerRefs[item.id]=marker;
+  });
+
+  renderMapSidebarList(filtered);
+}
+
+function renderMapSidebarList(items){
+  const list=$('mapList');
+  if(!list)return;
+  if(!items.length){
+    list.innerHTML=`<div class="p-6 text-center text-slate-400 text-xs">${esc(t('none'))}</div>`;
+    return;
+  }
+  list.innerHTML=items.map(it=>{
+    let badgeColor='amber';
+    if(it.cat==='spots')badgeColor='emerald';
+    if(it.cat==='travelers')badgeColor='sky';
+    const distPill=it.dist?`<span class="text-[10px] text-amber-300 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700">${it.dist} km</span>`:'';
+    return `
+      <article data-map-id="${it.id}" class="p-2.5 rounded-xl bg-slate-800/70 hover:bg-slate-800 border border-slate-700/60 hover:border-amber-400/60 cursor-pointer transition-all flex items-center gap-2.5">
+        <img src="${esc(it.photo||it.avatar)}" alt="" class="w-12 h-12 rounded-lg object-cover shrink-0 border border-${badgeColor}-400/50">
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center justify-between gap-1">
+            <h4 class="text-xs font-bold text-white truncate">${esc(it.name)}</h4>
+            ${distPill}
+          </div>
+          <p class="text-[11px] text-${badgeColor}-400 truncate mt-0.5">
+            <i class="fa-solid fa-location-dot mr-1"></i>${esc(it.dest)}
+            ${it.cat==='drivers'?` · $${it.price}/${it.unit}`:''}
+            ${it.cat==='spots'?` · ${it.tag}`:''}
+          </p>
+          <p class="text-[10px] text-slate-400 truncate mt-0.5">${esc(it.vehicle||it.desc)}</p>
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  list.querySelectorAll('[data-map-id]').forEach(card=>{
+    card.onclick=()=>{
+      const id=card.dataset.mapId,item=MAP_LOCATIONS.find(x=>x.id===id);
+      if(!item||!mapInstance)return;
+      mapInstance.flyTo([item.lat,item.lng],13,{duration:1.2});
+      const marker=mapMarkerRefs[id];
+      if(marker)setTimeout(()=>marker.openPopup(),1300);
+    };
+  });
+}
+
+function filterTourDestination(destName){
+  const fd=$('fd');
+  if(fd){
+    fd.value=destName;
+    render();
+  }
+}
+
+function handleLocateUser(){
+  const btn=$('mapLocateBtn');
+  if(!navigator.geolocation){
+    toast('Geolocation is not supported by your browser.');
+    return;
+  }
+  btn.innerHTML=`<i class="fa-solid fa-spinner fa-spin mr-1"></i>${esc(t('map_locating'))}`;
+  btn.disabled=true;
+
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      btn.innerHTML=`<i class="fa-solid fa-location-crosshairs mr-1"></i>${esc(t('map_locate'))}`;
+      btn.disabled=false;
+      userCoords={lat:pos.coords.latitude,lng:pos.coords.longitude};
+
+      if(!userLocationMarker){
+        userLocationMarker=L.marker([userCoords.lat,userCoords.lng],{icon:makeMapIcon('me',true)})
+          .bindPopup(`<div class="p-2 text-center text-xs font-bold text-white"><i class="fa-solid fa-user-check text-cyan-400 mr-1"></i>Your Location</div>`);
+        userLocationMarker.addTo(mapInstance);
+      }else{
+        userLocationMarker.setLatLng([userCoords.lat,userCoords.lng]);
+      }
+
+      mapInstance.flyTo([userCoords.lat,userCoords.lng],10,{duration:1.5});
+      renderMapPins();
+      toast(curLang==='si'?'ඔබගේ ස්ථානය හඳුනාගන්නා ලදී! ලඟම මාර්ගෝපදේශකයින් පෙන්වයි.':'Location detected! Sorted by distance to you.');
+    },
+    err=>{
+      btn.innerHTML=`<i class="fa-solid fa-location-crosshairs mr-1"></i>${esc(t('map_locate'))}`;
+      btn.disabled=false;
+      // Default to central Sri Lanka
+      mapInstance.flyTo([7.8731,80.7718],8.5,{duration:1.2});
+      toast(curLang==='si'?'ස්ථානය ලබාගත නොහැකි විය. ශ්‍රී ලංකා සිතියම පෙන්වයි.':'Could not access location. Showing Sri Lanka overview.');
+    },
+    {timeout:10000,enableHighAccuracy:true}
+  );
+}
 
 /* ---------- Images + OCR ---------- */
 const readURL=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej();r.readAsDataURL(f)});
@@ -433,16 +1551,21 @@ $('lf').addEventListener('submit',e=>{e.preventDefault();
 
 /* ---------- Language switcher ---------- */
 function applyLang(){
-  document.documentElement.lang=L==='si'?'si':'en';
+  document.documentElement.lang=curLang==='si'?'si':'en';
   document.querySelectorAll('[data-i]').forEach(e=>e.textContent=t(e.dataset.i));
   document.querySelectorAll('[data-p]').forEach(e=>e.placeholder=t(e.dataset.p));
-  fillFilters();render()}
-$('langBtn').onclick=()=>{document.body.classList.add('sw');setTimeout(()=>{L=L==='en'?'si':'en';ls.set('lang',L);applyLang();document.body.classList.remove('sw')},180)};
+  fillFilters();render();
+  if(typeof renderMapPins==='function')renderMapPins();
+  if(typeof updateNavUser==='function')updateNavUser();
+}
+$('langBtn').onclick=()=>{document.body.classList.add('sw');setTimeout(()=>{curLang=curLang==='en'?'si':'en';ls.set('lang',curLang);applyLang();document.body.classList.remove('sw')},180)};
 
 /* ---------- Init ---------- */
 const gm='Hi Open Tours Ceylon, I have a question about your tours.';
 $('navWa').href=wa(gm);$('footWa').href=wa(gm);$('yr').textContent=new Date().getFullYear();
 applyLang();
+updateNavUser();
+initInteractiveMap();
 </script>
 </body>
 </html>
